@@ -1,8 +1,10 @@
+import { Link } from 'react-router-dom'
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="layout">
       <header className="header">
-        <span className="brand">量潮众包</span>
+        <Link to="/" className="brand">量潮众包</Link>
       </header>
       <main className="main">{children}</main>
       <footer className="footer">
