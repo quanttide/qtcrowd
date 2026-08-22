@@ -17,7 +17,7 @@ export default function Home() {
       <section className="section">
         <h2>可接任务</h2>
         {tasks.map(task => (
-          <Link to={`/task/${task.name}`} className="service-item" key={task.name}>
+          <Link to={`/tasks/${task.name}`} className="service-item" key={task.name}>
             <span className="service-title">{task.title}</span>
             <p className="service-desc">{task.description}</p>
           </Link>
