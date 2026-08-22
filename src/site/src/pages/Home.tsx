@@ -16,10 +16,9 @@ export default function Home() {
       <section className="section">
         <h2>可接任务</h2>
         {tasks.map(task => (
-          <div className="service-item" key={task.slug}>
+          <div className="service-item" key={task.name}>
             <span className="service-title">{task.title}</span>
-            <p className="service-desc">{task.scenario}</p>
-            <p className="service-pricing">{task.standard}</p>
+            <p className="service-desc">{task.description}</p>
           </div>
         ))}
       </section>
