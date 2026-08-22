@@ -53,14 +53,14 @@ resource "alicloud_cdn_domain_config" "site_private_back" {
   }
 }
 
-# 根路径改写为 /index.html：私有回源（签名请求）与 OSS 静态网站托管
-# 默认首页重写存在已知冲突（/ 回源 403），改为 CDN 侧直接回源 index.html
-resource "alicloud_cdn_domain_config" "site_root_rewrite" {
+# SPA 回退改写：React Router（BrowserRouter）直接访问/刷新子路由（如 /post、/take）
+# 时回源 OSS 会 404，统一改写为 /index.html；真实产物（index.html、assets/、vite.svg）保持原样回源。
+resource "alicloud_cdn_domain_config" "site_spa_fallback" {
   domain_name   = alicloud_cdn_domain_new.site.domain_name
   function_name = "back_to_origin_url_rewrite"
   function_args {
     arg_name  = "source_url"
-    arg_value = "^/$"
+    arg_value = "^/(?!index\\.html$|assets/|vite\\.svg$).*"
   }
   function_args {
     arg_name  = "target_url"

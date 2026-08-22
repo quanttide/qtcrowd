@@ -49,7 +49,7 @@ jobs:
             -target=alicloud_oss_bucket.site \
             -target=alicloud_cdn_domain_new.site \
             -target=alicloud_cdn_domain_config.site_private_back \
-            -target=alicloud_cdn_domain_config.site_root_rewrite \
+            -target=alicloud_cdn_domain_config.site_spa_fallback \
             -target=alicloud_cdn_domain_config.site_https_force \
             -target=alicloud_alidns_record.site
         env:
