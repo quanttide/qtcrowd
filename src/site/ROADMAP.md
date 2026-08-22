@@ -26,5 +26,5 @@
 
 | 任务 | 说明 |
 |------|------|
-| 域名部署 | `crowd.quanttide.com` 部署（参照 qtrecurit 的 Terraform 模式） |
+| 域名部署 | `crowd.quanttide.com` 部署（参照已有静态站 Terraform 模式） |
 | 打 tag | `site/v0.1.0` 并更新 `src/site/CHANGELOG.md` |
