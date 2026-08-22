@@ -1,12 +1,8 @@
-import { Link } from 'react-router-dom'
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="layout">
       <header className="header">
-        <Link to="/" className="brand">量潮众包</Link>
-        <Link to="/post" className="nav-link">任务清单</Link>
-        <Link to="/take" className="nav-link">成为伙伴</Link>
+        <span className="brand">量潮众包</span>
       </header>
       <main className="main">{children}</main>
       <footer className="footer">
