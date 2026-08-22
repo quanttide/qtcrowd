@@ -12,46 +12,39 @@ export default function Home() {
     <div className="page home">
       <section className="hero">
         <h1 className="hero-tagline">
-          量潮众包：标准交易市场。<br />
-          我们不判断谁好谁坏，我们验证谁的产品符合标准。
+          量潮科技把销售工作众包出去。<br />
+          面向外部渠道与代理，按量潮标准结算。
         </h1>
-        <p className="hero-anchor">需求拆解为标准任务 · 执行方按量潮标准交付 · 验收准则兜底</p>
+        <p className="hero-anchor">销售众包 · 渠道/代理合作 · 站点仅作说明展示</p>
       </section>
 
       <section className="section">
-        <h2>交易方式</h2>
-        <div className="entry-grid">
-          <div className="entry-card">
-            <h3>需求方发单</h3>
-            <p>把需求拆解为标准任务，明确交付标准与验收准则，发布进入市场竞价。</p>
-            <Link to="/post">发单流程 &rarr;</Link>
-          </div>
-          <div className="entry-card">
-            <h3>执行方接单</h3>
-            <p>注册执行方身份，浏览标准任务，按量潮标准交付并沉淀信用记录。</p>
-            <Link to="/take">接单流程 &rarr;</Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>标准任务</h2>
+        <h2>量潮科技在发什么样的销售众包</h2>
+        <p>量潮科技作为需求方，把销售相关工作拆解、发包给外部渠道与代理完成，按交付与成交结果结算。</p>
         {tasks.map(task => (
           <div className="service-item" key={task.slug}>
             <span className="service-type">{task.type}</span>
             <span className="service-title">{task.title}</span>
             <p className="service-desc">{task.scenario}</p>
+            <p className="service-pricing">{task.standard}</p>
           </div>
         ))}
       </section>
 
       <section className="section">
-        <h2>与量潮数据的协同</h2>
-        <p>
-          众包市场承担筛选功能：执行方在通用市场按量潮标准交易、积累信用，
-          标准执行率达标的执行方导流进入量潮数据（qtdata）认证供应商池，
-          承接科研数据高价值订单。筛选是导流的闸门，闸门不放开。
-        </p>
+        <h2>怎么参与</h2>
+        <div className="entry-grid">
+          <div className="entry-card">
+            <h3>我是渠道 / 代理</h3>
+            <p>按量潮标准承接销售任务，按交付与成交结果结算。</p>
+            <Link to="/take">参与方式 &rarr;</Link>
+          </div>
+          <div className="entry-card">
+            <h3>有合作意向</h3>
+            <p>联系量潮科技，洽谈销售众包的任务类型与结算方式。</p>
+            <Link to="/post">发单说明 &rarr;</Link>
+          </div>
+        </div>
       </section>
 
       <section className="section">
@@ -71,7 +64,7 @@ export default function Home() {
           ))}
         </div>
         <p className="contact-note">
-          平台尚未上线，当前以试验田方式在第三方众包平台外发任务，验证供应商获取与标准任务拆解。
+          站点仅作信息展示；如需接单或洽谈合作，请通过上述方式联系。
         </p>
       </section>
     </div>
