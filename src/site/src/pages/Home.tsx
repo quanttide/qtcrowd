@@ -1,9 +1,8 @@
 import { tasks } from "../data/tasks";
 
-// 联系信息：GitHub 为真实链接；邮件为占位，待补充后启用
+// 联系信息：招聘邮箱
 const contacts = [
-  { label: "GitHub", value: "github.com/quanttide", href: "https://github.com/quanttide" },
-  { label: "邮件", value: "待补充", href: "" },
+  { label: "邮箱", value: "hr@quanttide.com", href: "mailto:hr@quanttide.com" },
 ];
 
 export default function Home() {
