@@ -5,8 +5,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="layout">
       <header className="header">
         <Link to="/" className="brand">量潮众包</Link>
-        <Link to="/post" className="nav-link">发单</Link>
-        <Link to="/take" className="nav-link">接单</Link>
+        <Link to="/post" className="nav-link">任务清单</Link>
+        <Link to="/take" className="nav-link">成为伙伴</Link>
       </header>
       <main className="main">{children}</main>
       <footer className="footer">

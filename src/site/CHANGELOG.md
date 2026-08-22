@@ -2,11 +2,19 @@
 
 ## 2026-08-22
 
-### 新增
+### site/v0.1.1-alpha.1（接单人优先版）
 
-- 初始化 src/site：Vite + React 19 + TS 脚手架（参考 qtfounder / qtbusiness）
-- 首页：Hero + 交易方式入口（发单/接单）+ 标准任务清单 + 与 qtdata 协同 + 联系
-- 发单页 `/post`：为什么发单、发单流程、标准任务类型
-- 接单页 `/take`：为什么接单、接单流程、平台原则、当前状态
-- 数据：`src/data/tasks.ts` 静态标准任务清单
-- 内容核对自 data/intention/qtcrowd（众包工作意图）与 data/journal/qtcrowd/2026-08-20.md
+- 站点以**接单人为中心**重构：Hero 改为面向接单人的价值主张
+- 新增「你能得到什么」：按结果付酬 / 标准公开 / 持续有单
+- 任务清单改为「你可以接这些活」；新增「怎么相信」（结算保障）
+- 导航改为：首页 / 任务清单 / 成为伙伴
+- 已上线 crowd.quanttide.com
+
+### site/v0.1.0（初始发布）
+
+- 初始化 src/site：Vite + React 19 + TS 脚手架
+- 首页：Hero + 发单说明 + 可接任务清单 + 参与方式 + 联系
+- 发单页 `/post`：量潮科技自营发销售众包；参与页 `/take`：谁能参与 / 如何参与 / 平台原则
+- 数据：`src/data/tasks.ts` 销售众包任务类型清单（渠道拓展 / 线索获取 / 代理销售 / 推广投放 / 客户回访）
+- 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
+- 上线 crowd.quanttide.com
