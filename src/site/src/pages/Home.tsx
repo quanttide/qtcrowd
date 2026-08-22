@@ -17,7 +17,6 @@ export default function Home() {
         <h2>可接任务</h2>
         {tasks.map(task => (
           <div className="service-item" key={task.slug}>
-            <span className="service-type">{task.type}</span>
             <span className="service-title">{task.title}</span>
             <p className="service-desc">{task.scenario}</p>
             <p className="service-pricing">{task.standard}</p>
