@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="page home">
       <section className="hero">
-        <h1 className="hero-tagline">量潮众包 · 课程研发</h1>
+        <h1 className="hero-tagline">量潮众包</h1>
         <p className="hero-anchor">把课程研发拆成小任务，学员即生产 · 课堂 → 众包 → 招聘</p>
       </section>
 
