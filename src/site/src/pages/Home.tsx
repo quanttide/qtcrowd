@@ -37,6 +37,14 @@ export default function Home() {
       </section>
 
       <section className="section">
+        <h2>报酬与竞价</h2>
+        <ul>
+          <li>报酬二选一：接单人自选——现金（录制 20 元 / 审核 5 元）或 10 倍代金券（录制 200 元券 / 审核 50 元券，抵课程消费）。想学习选券、想赚钱选现金；券回流课堂。</li>
+          <li>谈条件竞价：接单人可报更低价格、或指定报酬形式（现金 / 券）来接单，充分竞争换取低价和高质量。</li>
+        </ul>
+      </section>
+
+      <section className="section">
         <h2>联系</h2>
         <div className="contact-list">
           {contacts.map(contact => (
