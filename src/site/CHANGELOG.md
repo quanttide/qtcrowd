@@ -4,6 +4,14 @@
 
 ## 2026-08-24
 
+### site/v0.1.1-beta.3（联系邮箱变更）
+
+### 修改
+
+- 联系邮箱由 `hr@quanttide.com` 改为 `crowd@quanttide.com`（`src/data/site.ts` 常量 + 任务 applyGuide）
+
+## 2026-08-24
+
 ### site/v0.1.1-beta.2（结构化数据 + 黄页体验）
 
 ### 新增
