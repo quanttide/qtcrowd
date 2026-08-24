@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## 2026-08-24
+
+### site/v0.1.1-beta.2（结构化数据 + 黄页体验）
+
 ### 新增
 
 - 数据模型结构化：`Task` 扩展为 `status / category / business / deliverables / reward / reference / applyGuide` 等命名段落，基于 `data/profile/qtcloud/second-brain-init.md` 真实内容填充
