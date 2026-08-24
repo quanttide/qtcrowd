@@ -6,9 +6,11 @@
   "description": "量潮众包 - 标准交易市场官网",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run data:validate && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "data:sync": "node scripts/sync-tasks.mjs",
+    "data:validate": "node scripts/validate-tasks.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",

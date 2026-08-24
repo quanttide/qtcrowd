@@ -1,29 +1,52 @@
-// 众包可接任务清单
-// 量潮众包：当前真实任务。数据源：data/profile/qtcloud/second-brain-init.md。
-// 真实数据一律以 data/profile 为准，不自创占位/示例数据。
-export interface Task {
-  name: string;         // 唯一任务标识（路由参数 / key）
-  title: string;        // 任务名
-  description: string;  // 目录一句话
-  business: string;     // 所属环节
-  detail: string[];     // 详情页具体信息
-  settlement: string;   // 结算 / 报价
+// 众包可接任务清单（类型与聚合）。
+// 数据本体在 tasks.json（真实数据源：父仓库 data/profile，见 AGENTS.md），
+// 由 scripts/sync-tasks.mjs 从 data/profile 生成 / 更新，scripts/validate-tasks.mjs 校验。
+// 本文件只做类型声明与数据聚合，不自创占位 / 示例数据。
+
+import tasksData from "./tasks.json";
+
+export type TaskStatus = "待认领" | "进行中" | "已关闭";
+
+export interface TaskReference {
+  label: string;
+  url: string | null;
 }
 
-export const tasks: Task[] = [
-  {
-    name: "second-brain-init",
-    title: "第二大脑创建插件",
-    description: "把「第二大脑上下文创建对话」流程接入资产云，整理为插件 / 可复用配置。",
-    business: "量潮云 · 招聘考核",
-    detail: [
-      "理解现有对话流程与格式章程；",
-      "将该流程接入资产云，整理为插件 / 可复用配置；",
-      "输出一份非技术用户也能看懂的使用说明；",
-      "完成一轮测试，记录结果与问题。",
-      "任务输入：原始对话导出文件（报名后提供）+ 格式章程说明。",
-      "参考数据：quanttide-profile-of-agent-engineering/quanttide-asset。",
-    ],
-    settlement: "1000 元代金券（可兑换 CEO 2 小时课程）；也可自报价，最终协商。",
-  },
-];
+/** 与 tasks.schema.json 中 task 定义保持一致 */
+export interface Task {
+  name: string; // 唯一任务标识（路由参数 / key），与档案文件名一致
+  title: string; // 任务名
+  description: string; // 目录一句话（站点侧维护）
+  business: string; // 业务
+  category: string; // 类别
+  status: TaskStatus; // 状态（黄页可接性依据）
+  background: string[]; // 任务背景
+  content: string[]; // 任务内容
+  input: string[]; // 任务输入
+  reference: TaskReference[]; // 参考链接
+  deliverables: string[]; // 交付物
+  reward: string[]; // 报酬 / 结算
+  others: string[]; // 其他说明
+  applyGuide: string[]; // 如何报名步骤（站点侧维护）
+}
+
+// tasks.json 由 scripts/sync-tasks.mjs 生成并经 scripts/validate-tasks.mjs 校验
+// （含 tasks.schema.json 契约），此处显式断言为 Task[] 作为类型桥。
+export const tasks: Task[] = tasksData.tasks as Task[];
+
+/** 状态 → 可接性说明 */
+export const STATUS_AVAILABILITY: Record<TaskStatus, string> = {
+  "待认领": "可接",
+  "进行中": "已在进行，暂不可接",
+  "已关闭": "已关闭，不可接",
+};
+
+/** 按状态分组（待认领 → 进行中 → 已关闭），为多任务目录铺路 */
+export function groupTasksByStatus(
+  taskList: Task[],
+): { status: TaskStatus; tasks: Task[] }[] {
+  const order: TaskStatus[] = ["待认领", "进行中", "已关闭"];
+  return order
+    .map(status => ({ status, tasks: taskList.filter(t => t.status === status) }))
+    .filter(group => group.tasks.length > 0);
+}
