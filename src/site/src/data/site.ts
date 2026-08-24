@@ -2,7 +2,7 @@
 // Home 与 TaskDetail 统一从这里取，不再各自硬编码，避免漂移。
 
 /** 联系邮箱（真实接单入口：报名 / 咨询） */
-export const CONTACT_EMAIL = "hr@quanttide.com";
+export const CONTACT_EMAIL = "crowd@quanttide.com";
 
 /** 联系邮箱 mailto 链接 */
 export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`;
