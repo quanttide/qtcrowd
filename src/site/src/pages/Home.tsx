@@ -11,7 +11,7 @@ export default function Home() {
     <div className="page home">
       <section className="hero">
         <h1 className="hero-tagline">量潮众包</h1>
-        <p className="hero-anchor">把课程研发拆成小任务，学员即生产 · 课堂 → 众包 → 招聘</p>
+        <p className="hero-anchor">把内部流程整理为可复用的插件与配置，众包给外部完成</p>
       </section>
 
       <section className="section">
@@ -25,22 +25,21 @@ export default function Home() {
       </section>
 
       <section className="section">
-        <h2>众包链条</h2>
+        <h2>任务来源</h2>
         <p>
-          课堂 → 众包 → 招聘：众包给学员提供参与机会，让他们获得信用和收益；
-          众包积累的信用又帮助他们参与招聘。接单人就是学员，学习即生产。
+          量潮自供需求：把内部有价值但精力不足的流程（如「第二大脑上下文创建对话」）
+          拆成明确具体的小任务放出来，由众包完成；小单是标准任务，不是低价悬赏。
         </p>
         <p className="contact-note">
-          不做低价悬赏：小单是标准任务，不是悬赏——把需求分解成明确具体的小任务，
-          用充分竞争换取低价和高质量。
+          不做低价悬赏：把需求分解成明确具体的小任务，用充分竞争换取低价和高质量。
         </p>
       </section>
 
       <section className="section">
-        <h2>报酬与竞价</h2>
+        <h2>结算与竞价</h2>
         <ul>
-          <li>报酬二选一：接单人自选——现金（录制 20 元 / 审核 5 元）或 10 倍代金券（录制 200 元券 / 审核 50 元券，抵课程消费）。想学习选券、想赚钱选现金；券回流课堂。</li>
-          <li>谈条件竞价：接单人可报更低价格、或指定报酬形式（现金 / 券）来接单，充分竞争换取低价和高质量。</li>
+          <li>报酬：按任务档案明码标价（如 1000 元代金券，可兑换 CEO 2 小时课程），也可自报价最终协商。</li>
+          <li>谈条件竞价：接单人可自报价或谈条件，充分竞争换取低价和高质量。</li>
         </ul>
       </section>
 
