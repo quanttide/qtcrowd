@@ -196,3 +196,37 @@ ul {
 .service-item:hover .service-title {
   color: #666;
 }
+
+/* 按状态分组的目录 */
+.task-group {
+  margin: 1.5rem 0;
+}
+
+.task-group-title {
+  margin: 0 0 0.5rem;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.status-tag {
+  display: inline-block;
+  margin-left: 0.75em;
+  padding: 0 0.5em;
+  font-size: 0.8em;
+  font-weight: 400;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+/* 结算与竞价（按任务数据渲染） */
+.settlement-item {
+  margin: 1rem 0;
+}
+
+.settlement-title {
+  margin: 0 0 0.25rem;
+  font-size: 1em;
+  font-weight: 600;
+}
