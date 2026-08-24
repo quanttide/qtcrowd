@@ -14,7 +14,7 @@
 |--------|------|
 | 全局 | `:root` 变量、`body`、`#root` 容器（max-width 720px 居中） |
 | 布局 | `.layout` / `.header` / `.main` / `.footer` |
-| 首页 | `.hero`、`.section`、`.entry-*`、`.service-item`（可点击目录项） |
+| 首页 | `.hero`、`.section`、`.service-item`（可点击目录项）、`.task-group` / `.status-tag`（按状态分组与可接性标签）、`.settlement-item` / `.settlement-title`（结算与竞价） |
 | 详情 | `.back-link`、`.detail-meta` |
 | 联系 | `.contact-item` / `.contact-label` / `.contact-note` |
 

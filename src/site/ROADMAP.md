@@ -8,9 +8,10 @@
 
 ## 当前状态
 
-- 首页 `/`：定位 +「可接任务」目录 + 任务来源 + 结算与竞价 + 联系
-- 详情页 `/tasks/:name`：任务说明 + 具体信息 + 结算 + 联系
-- 数据：`src/data/tasks.ts` 静态任务清单
+- 首页 `/`：定位 +「可接任务」目录（按状态分组）+ 任务来源 + 结算与竞价（由数据渲染）+ 联系
+- 详情页 `/tasks/:name`：任务结构化段落 +「如何报名」+ 真实接单入口
+- 数据：`src/data/tasks.json`（真实数据源，脚本生成）+ `tasks.schema.json` + `site.ts` 共享常量
+- 校验：`npm run data:sync` / `npm run data:validate`（已挂进 build 前置）
 - **真实数据源**：父仓库 `quanttide-crowd` 下的 `data/profile`（见 `AGENTS.md`）；当前展示「第二大脑创建插件」任务
 
 ---
@@ -30,14 +31,16 @@
 
 ## 改进计划
 
-### 阶段 1：真实数据落地（P0）
+### 阶段 1：真实数据落地（P0）✅ 已完成
 
 | 任务 | 说明 |
 |------|------|
 | 数据源解耦 | 任务数据改为**构建时从 `data/profile` 生成/导入**，或抽成独立 JSON + JSON Schema 校验；CI 断言 site 数据与 `data/profile` 一致，把「保持一致」变成机器保证 |
 | 数据模型结构化 | `Task` 扩展为 `status / category / business / deliverables / reward / reference / applyGuide`，把 `detail[]` 拆成命名段落，不再压扁 |
 
-### 阶段 2：内容与体验（P1）
+实现：`src/data/tasks.json`（由 `scripts/sync-tasks.mjs` 从 data/profile 生成）+ `tasks.schema.json`（契约）+ `scripts/validate-tasks.mjs`（契约 + 一致性 + 邮箱去重校验），`npm run data:sync` / `npm run data:validate`，build 前置校验。
+
+### 阶段 2：内容与体验（P1）✅ 已完成
 
 | 任务 | 说明 |
 |------|------|
@@ -45,10 +48,14 @@
 | 补状态与报名 | 黄页按 `status`（待认领/进行中/已关闭）展示；详情页加「如何报名」步骤 + 真实接单入口 |
 | 统一定位 | 拉齐 `docs/index.md`、`README.md`、`docs/dev-guide/site.md` 三处定位，并让代码与文档一致 |
 
-### 阶段 3：工程化与扩展（P2）
+实现：`src/data/site.ts` 共享常量（`CONTACT_EMAIL` / `SETTLEMENT_POLICY`）；首页按状态分组（`groupTasksByStatus`）+ 结算由数据渲染；详情页命名段落 + `applyGuide` 报名步骤 + mailto 接单入口；文档与代码对齐（含移除 `/tasks` 与 `/` 重复路由）。
+
+### 阶段 3：工程化与扩展（P2）⏳ 部分完成
 
 | 任务 | 说明 |
 |------|------|
 | 目录化 | tasks 支持集合，按类别/状态分组，为多任务铺路 |
 | 工程化 | 数据契约单测；详情列表 `key` 用稳定 id；footer 年份动态 |
 | 上线发布 | 域名部署 `crowd.quanttide.com`（参照已有静态站 Terraform 模式）；打 tag 并更新 `src/site/CHANGELOG.md` |
+
+实现：按状态分组已完成（`groupTasksByStatus`）；数据契约校验脚本（`data:validate`）+ 列表稳定 `key` + footer 动态年份已完成；上线发布待做（含 tag）。

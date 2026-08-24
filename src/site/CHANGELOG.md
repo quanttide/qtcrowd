@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### 新增
+
+- 数据模型结构化：`Task` 扩展为 `status / category / business / deliverables / reward / reference / applyGuide` 等命名段落，基于 `data/profile/qtcloud/second-brain-init.md` 真实内容填充
+- 数据源解耦：任务数据抽为 `src/data/tasks.json` + JSON Schema 契约（`tasks.schema.json`）；新增 `scripts/sync-tasks.mjs`（从 data/profile 生成）与 `scripts/validate-tasks.mjs`（契约 + 一致性 + 邮箱去重校验），npm 脚本 `data:sync` / `data:validate`，build 前置校验
+- 共享常量：`src/data/site.ts`（联系邮箱、结算口径），Home 与 TaskDetail 共用
+- 首页「可接任务」按状态分组展示，标注可接性
+- 详情页「如何报名」步骤 + 真实接单入口（联系邮箱报名）
+
+### 修改
+
+- 首页「结算与竞价」改由任务数据渲染，删除与任务数据重复的硬编码段落
+- 移除 `/tasks` 与 `/` 重复路由，路由收敛为 `/` 与 `/tasks/:name`
+- 详情列表 `key` 改用稳定值（条目文本 / 链接）；footer 年份动态取当前年
+- 文档（docs/*、README、docs/dev-guide/site.md）定位拉齐为「黄页信息展示站 + 真实数据源 data/profile」
+
 ## 2026-08-22
 
 ### site/v0.1.1-beta.1（课程研发众包）
