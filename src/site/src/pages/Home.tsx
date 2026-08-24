@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
-import { tasks, groupTasksByStatus, STATUS_AVAILABILITY } from "../data/tasks";
-import { CONTACT_ITEMS, SETTLEMENT_POLICY } from "../data/site";
+import { tasks, STATUS_AVAILABILITY } from "../data/tasks";
+import { CONTACT_ITEMS } from "../data/site";
 
 export default function Home() {
-  const groups = groupTasksByStatus(tasks);
-
   return (
     <div className="page home">
       <section className="hero">
@@ -14,48 +12,19 @@ export default function Home() {
 
       <section className="section">
         <h2>可接任务</h2>
-        {groups.map(group => (
-          <div className="task-group" key={group.status}>
-            <h3 className="task-group-title">
-              {group.status}
-              <span className="status-tag">{STATUS_AVAILABILITY[group.status]}</span>
-            </h3>
-            {group.tasks.map(task => (
-              <Link to={`/tasks/${task.name}`} className="service-item" key={task.name}>
-                <span className="service-title">{task.title}</span>
-                <p className="service-desc">{task.description}</p>
-              </Link>
-            ))}
-          </div>
-        ))}
-      </section>
-
-      <section className="section">
-        <h2>任务来源</h2>
-        <p>
-          量潮自供需求：把内部有价值但精力不足的流程（如「第二大脑上下文创建对话」）
-          拆成明确具体的小任务放出来，由众包完成；小单是标准任务，不是低价悬赏。
-        </p>
-        <p className="contact-note">
-          不做低价悬赏：把需求分解成明确具体的小任务，用充分竞争换取低价和高质量。
-        </p>
-      </section>
-
-      <section className="section">
-        <h2>结算与竞价</h2>
-        {tasks.map(task => (
-          <div className="settlement-item" key={task.name}>
-            <h3 className="settlement-title">{task.title}</h3>
-            <ul>
-              {task.reward.map(item => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-        {SETTLEMENT_POLICY.map(line => (
-          <p className="contact-note" key={line}>{line}</p>
-        ))}
+        <div className="task-grid">
+          {tasks.map(task => (
+            <Link to={`/tasks/${task.name}`} className="task-card" key={task.name}>
+              <div className="task-card-head">
+                <span className="task-card-title">{task.title}</span>
+                <span className="status-tag">{STATUS_AVAILABILITY[task.status]}</span>
+              </div>
+              <p className="task-card-desc">{task.description}</p>
+              <p className="task-card-meta">{task.business} · {task.category} · {task.status}</p>
+              <p className="task-card-reward">{task.reward[0]}</p>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="section">

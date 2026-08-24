@@ -4,10 +4,10 @@
 
 ## Home（首页 `/`）
 
+首页为**众包任务列表**，每个任务一张卡片：
+
 - Hero：定位一行「量潮众包」+ 副文案
-- 可接任务：按状态分组渲染任务目录（`groupTasksByStatus`），每项显示状态与可接性（`STATUS_AVAILABILITY`），点击进详情页
-- 任务来源：量潮自供需求、不做低价悬赏
-- 结算与竞价：按任务数据（`task.reward`）渲染明码标价，竞价原则来自 `site.ts` 的 `SETTLEMENT_POLICY`，无硬编码重复
+- 可接任务：`tasks` 渲染为**任务卡片网格**（`.task-grid` / `.task-card`），每张卡片显示：任务名、可接性（`STATUS_AVAILABILITY`）、一句话描述、业务 · 类别 · 状态、报酬首条；**点击卡片进详情页**（`/tasks/:name`）
 - 联系：来自 `site.ts` 的 `CONTACT_ITEMS`（单一邮箱来源）
 
 ## TaskDetail（详情页 `/tasks/:name`）
