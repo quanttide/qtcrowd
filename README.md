@@ -9,15 +9,18 @@
 | 路径 | 说明 |
 |------|------|
 | `src/site` | 众包官网（React 19 + Vite，见 [site README](./src/site/README.md)） |
+| `src/studio` | 参与人员端工作室（Flutter Web，任务认领 + 结算，见 [studio README](./src/studio/README.md)） |
 
 ## 开发
 
 ```bash
 cd src/site && npm install && npm run dev
+cd src/studio && flutter pub get && flutter run
 ```
 
 ## 构建
 
 ```bash
 cd src/site && npm run build
+cd src/studio && flutter build web
 ```

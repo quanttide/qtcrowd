@@ -7,6 +7,11 @@
 - `studio` = 量潮众包平台的**工作台 / 控制台**（真实交易与运营层），与 `site`（招募说明）分工：**site 引流，studio 落地**。
 - 依据：`00-overview.md`（设计总览）、`01-task-model.md`（任务模型）、`02-verifier-*.json`（验收器）、`03-settlement-escrow.md`（托管结算）、`04-data-model.sql`（数据模型）。
 
+## 0.5 当前状态（2026-08）
+
+- 已初始化 `src/studio`：**参与人员端**（Flutter Web）MVP——任务列表 / 详情 / 认领（本地记录 `data/my-tasks.json`）/ 我的结算（`data/my-settlements.json`），任务数据与 site 同一数据源（见 `src/studio/README.md`）。
+- 尚未实现：管理端（qtcloud-crowd `src/studio` 已先行）、服务端（验收器 / 托管结算 / 归因 / 数据层），见下文角色与里程碑。
+
 ## 1. 角色工作台
 
 | 角色 | 能力 |
@@ -46,7 +51,7 @@
 - **栈**：`studio` 遵循惯例用 **Flutter Web**（类比 qtcloud-agent / qtcloud-health 的 `studio`）。`site` 为 React + Vite。
 - **服务端**：验收器 / 托管结算 / 归因 / 数据层（PostgreSQL 数据模型见 `04-data-model.sql`）。site 与 studio 共享同一数据模型与业务逻辑。
 - **构建**：`src/studio`，`flutter build web` 产物上传到 `{repo}-studio` 桶。
-- **部署**：新增 `deploy-studio.yml`（`site/*` / `studio/*` tag 触发）＋ terraform（`studio-bucket.tf` + `cdn.tf` 的 studio CDN/DNS，如 `studio.crowd.quanttide.com`）＋ 证书（单层/按需）＋ SPA 回退。`site` 已上线；`studio` 待建。
+- **部署**：新增 `deploy-studio.yml`（`site/*` / `studio/*` tag 触发）＋ terraform（`studio-bucket.tf` + `cdn.tf` 的 studio CDN/DNS，如 `studio.crowd.quanttide.com`）＋ 证书（单层/按需）＋ SPA 回退。`site` 已上线；`studio` 已初始化参与端（待部署）。
 
 ## 7. 里程碑
 
