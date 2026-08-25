@@ -91,6 +91,10 @@
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
           "description": "如何报名步骤（站点侧维护，含真实接单入口）"
+        },
+        "deadline": {
+          "type": "string",
+          "description": "截止日期（可选）"
         }
       },
       "additionalProperties": false

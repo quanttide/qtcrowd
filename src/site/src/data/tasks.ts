@@ -28,6 +28,7 @@ export interface Task {
   reward: string[]; // 报酬 / 结算
   others: string[]; // 其他说明
   applyGuide: string[]; // 如何报名步骤（站点侧维护）
+  deadline?: string; // 截止日期（可选）
 }
 
 // tasks.json 由 scripts/sync-tasks.mjs 生成并经 scripts/validate-tasks.mjs 校验

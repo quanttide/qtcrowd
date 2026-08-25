@@ -87,6 +87,13 @@ export default function TaskDetail() {
         </ul>
       </section>
 
+      {task.deadline && (
+        <section className="section">
+          <h2>截止日期</h2>
+          <p>{task.deadline}</p>
+        </section>
+      )}
+
       <section className="section">
         <h2>如何报名</h2>
         <ol>
