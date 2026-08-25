@@ -20,9 +20,9 @@ const SITE_DIR = path.resolve(SCRIPTS_DIR, "..");
 const DATA_DIR = path.join(SITE_DIR, "src", "data");
 const TASKS_JSON = path.join(DATA_DIR, "tasks.json");
 const SCHEMA_JSON = path.join(DATA_DIR, "tasks.schema.json");
-const PROFILE_DIR =
+const PROFILE_BASE_DIR =
   process.env.QTCROWD_PROFILE_DIR ??
-  path.resolve(SITE_DIR, "..", "..", "..", "..", "data", "profile", "qtcloud");
+  path.resolve(SITE_DIR, "..", "..", "..", "..", "data", "profile");
 
 const errors = [];
 const warnings = [];
@@ -110,14 +110,23 @@ function validateSchema() {
 // ---------- 与 data/profile 一致性 ----------
 
 function crossCheckProfile(tasks) {
-  if (!existsSync(PROFILE_DIR)) {
+  if (!existsSync(PROFILE_BASE_DIR)) {
     warnings.push(
-      `未找到 data/profile 目录（${PROFILE_DIR}），跳过与 data/profile 的一致性校验；` +
+      `未找到 data/profile 目录（${PROFILE_BASE_DIR}），跳过与 data/profile 的一致性校验；` +
       "完整校验请在父仓库 quanttide-crowd 下运行（data/profile 为父仓库子模块）",
     );
     return;
   }
-  const parsedByName = new Map(parseProfileDir(PROFILE_DIR).map(p => [p.name, p]));
+  // 扫描所有业务子目录（qtcloud、qtclass 等）
+  const parsedByName = new Map();
+  for (const entry of readdirSync(PROFILE_BASE_DIR)) {
+    const subdir = path.join(PROFILE_BASE_DIR, entry);
+    if (statSync(subdir).isDirectory() && !entry.startsWith(".")) {
+      for (const p of parseProfileDir(subdir)) {
+        parsedByName.set(p.name, p);
+      }
+    }
+  }
   const profileFields = [
     "title", "business", "category", "status",
     "background", "content", "input", "reference",
@@ -143,7 +152,7 @@ function crossCheckProfile(tasks) {
       errors.push(`data/profile 档案 ${name}.md 在 tasks.json 中无对应任务`);
     }
   }
-  console.log(`[validate] 与 data/profile 一致性校验完成（数据源：${PROFILE_DIR}）`);
+  console.log(`[validate] 与 data/profile 一致性校验完成（数据源：${PROFILE_BASE_DIR}）`);
 }
 
 // ---------- 邮箱去重（真实接单入口） ----------
