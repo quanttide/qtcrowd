@@ -14,19 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - studio：HttpTaskRepository 读公开层 + HttpClaimApi 认领写回（409 提示）；66 测试全绿
 - 部署：deploy-site.yml SPA 深链 200（/tasks 及 /tasks/<name> 无扩展名 key）
 
-## [0.1.1-rc.1] - 2026-08-25
-
-### Added
-
-- 新增「量潮招聘工作流升级」任务（qtrecurit-workflow-update）
-- 任务数据模型支持 `deadline`（截止日期）可选字段
-- 验证脚本支持多业务目录（qtcloud、qtclass 等）
-
-### Changed
-
-- 以 data/profile 档案为准同步 tasks.json 数据
-- 规范化招聘工作流升级档案格式
-
 ## [0.1.1-beta.5] - 2026-08-24
 
 ### Changed
@@ -112,7 +99,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 [Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.6...HEAD
 [0.1.1-beta.6]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.5...site/v0.1.1-beta.6
-[0.1.1-rc.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.5...site/v0.1.1-rc.1
 [0.1.1-beta.5]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.4...site/v0.1.1-beta.5
 [0.1.1-beta.4]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.3...site/v0.1.1-beta.4
 [0.1.1-beta.3]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.2...site/v0.1.1-beta.3
