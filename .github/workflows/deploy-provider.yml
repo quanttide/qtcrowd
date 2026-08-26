@@ -35,7 +35,7 @@ env:
   TF_STATE_KEY: qtcrowd/terraform.tfstate
   # 后台 API 根 URL（qtcrowd-provider 的 QTCLOUD_CROWD_BACKEND_API，必填）：上架拉取 +
   # 认领/交付转发目标。qtcloud-crowd API 网关地址（公开，见 qtcloud-crowd README）
-  TF_VAR_backend_api: https://api.quanttide.com/qtcloud-crowd
+  TF_VAR_backend_api: https://qtcloudowd-prod-eqpifjcvoh.cn-hangzhou.fcapp.run
   # ACR 实例地址走 secret（ALIYUN_ACR_REGISTRY）：个人版实例专属域名属敏感信息，不写入代码
   ACR_NAMESPACE: quanttide
 
