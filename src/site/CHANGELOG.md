@@ -110,13 +110,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
 - 上线 crowd.quanttide.com
 
-[Unreleased]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-rc.1...HEAD
-[0.1.1-rc.1]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-beta.5...v0.1.1-rc.1
-[0.1.1-beta.5]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-beta.4...v0.1.1-beta.5
-[0.1.1-beta.4]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-beta.3...v0.1.1-beta.4
-[0.1.1-beta.3]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-beta.2...v0.1.1-beta.3
-[0.1.1-beta.2]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-beta.1...v0.1.1-beta.2
-[0.1.1-beta.1]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-alpha.2...v0.1.1-beta.1
-[0.1.1-alpha.2]: https://github.com/quanttide/qtcrowd/compare/v0.1.1-alpha.1...v0.1.1-alpha.2
-[0.1.1-alpha.1]: https://github.com/quanttide/qtcrowd/compare/v0.1.0...v0.1.1-alpha.1
-[0.1.0]: https://github.com/quanttide/qtcrowd/releases/tag/v0.1.0
+[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.6...HEAD
+[0.1.1-beta.6]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.5...site/v0.1.1-beta.6
+[0.1.1-rc.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.5...site/v0.1.1-rc.1
+[0.1.1-beta.5]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.4...site/v0.1.1-beta.5
+[0.1.1-beta.4]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.3...site/v0.1.1-beta.4
+[0.1.1-beta.3]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.2...site/v0.1.1-beta.3
+[0.1.1-beta.2]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.1...site/v0.1.1-beta.2
+[0.1.1-beta.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-alpha.2...site/v0.1.1-beta.1
+[0.1.1-alpha.2]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-alpha.1...site/v0.1.1-alpha.2
+[0.1.1-alpha.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.0...site/v0.1.1-alpha.1
+[0.1.0]: https://github.com/quanttide/qtcrowd/releases/tag/site/v0.1.0
