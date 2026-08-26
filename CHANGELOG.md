@@ -7,6 +7,7 @@
 - 前台 OSS 共享数据层：公开数据源配置 `QTCLOUD_CROWD_PUBLIC_URL`（公开桶/CDN 根 URL），site/studio 任务池同源读公开数据层（published 任务：title/description/reward/applyGuide），fetch 失败页面报错不静默；本地 mock 公开桶（`src/site/public/mock/`，dev 默认数据源）；未配置时回退打包 tasks.json（开发兜底）
 - site：任务池改为公开数据源拉取（`{url}/tasks.json`，404 回退 `public/tasks/index.json`），首页 / 详情页 loading / error / 空态三态 + 重试；vitest 数据源切换测试（mock fetch 成功 / 404 回退 / 失败不静默）
 - studio：认领改调后台 API（`POST {BACKEND_API}/api/tasks/{id}/claim`，body `partner_id`，published → accepted，`QTCLOUD_CROWD_BACKEND_API` 未配置时本地 mock），认领成功写本地 `my-tasks.json`，API 失败 / 非法状态不写本地并提示；任务列表未认领显示「可认领」；测试：认领流程 mock API 成功 / 失败 / 非法状态 + 公开数据层仓储
+- 部署：`deploy-site.yml` 增加 SPA 深链 200 处理（列表 key 模式，参考 qtfiction）——把 SPA 壳上传为无扩展名 key（`/tasks` 及 `/tasks/<id>`，Content-Type:text/html），id 集合从 `src/site/src/data/tasks.json` 解析；深链直接访问返回 200，不依赖 CDN 回写
 
 ### 修改
 

@@ -3,7 +3,12 @@
 # 架构：site/* tag → Actions（terraform apply + npm build + ossutil cp）
 #   → OSS 桶（qtcrowd-site 静态网站模式）→ 阿里云 CDN（crowd.quanttide.com，泛域名证书 *.quanttide.com）
 #
-# 所需 GitHub secrets（org 级）：
+# SPA 深链处理（列表 key 模式，参考 qtfiction deploy-site.yml）：
+#   把 SPA 壳上传为无扩展名 key（/tasks 及 /tasks/<id>，Content-Type:text/html），
+#   使深链直接访问返回 200，不依赖 CDN 回写规则；id 集合从 src/site/src/data/tasks.json 解析
+#   （构建时已由 data:validate 校验，与产物同源）。
+#
+# 所需 GitHub secrets（org 级，已有）：
 #   - ALIYUN_ACCESS_KEY_ID / ALIYUN_ACCESS_KEY_SECRET：RAM 用户 AccessKey（terraform + OSS 上传 + CDN 刷新）
 
 name: Deploy Site
@@ -79,6 +84,17 @@ jobs:
         run: |
           for f in index.html; do
             ossutil cp "src/site/dist/$f" "oss://${{ env.OSS_BUCKET }}/$f" -f --meta=Cache-Control:no-cache
+          done
+
+      # SPA 路由 200：把 SPA 壳上传为无扩展名 key（OSS key 无需扩展名），
+      # 使深链直接访问返回 200 + text/html，避免 404 状态码；
+      # 路由集合：/tasks 及 /tasks/<name>（name 从 src/site/src/data/tasks.json 解析，
+      # 如 second-brain-init、qtrecurit-workflow-update）
+      - name: Upload SPA route entries（200）
+        run: |
+          ossutil cp src/site/dist/index.html oss://${{ env.OSS_BUCKET }}/tasks -f --meta "Content-Type:text/html" --meta "Cache-Control:no-cache"
+          for name in $(python3 -c "import json,sys; print(' '.join(t['name'] for t in json.load(open('src/site/src/data/tasks.json'))['tasks']))"); do
+            ossutil cp src/site/dist/index.html "oss://${{ env.OSS_BUCKET }}/tasks/$name" -f --meta "Content-Type:text/html" --meta "Cache-Control:no-cache"
           done
 
       - name: Refresh CDN
