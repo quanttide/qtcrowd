@@ -4,7 +4,7 @@ import 'package:http/testing.dart';
 import 'package:qtcrowd_studio/repositories/claim_api.dart';
 
 void main() {
-  group('MockClaimApi（本地 mock：BACKEND_API 未配置时）', () {
+  group('MockClaimApi（本地 mock：PROVIDER_URL/BACKEND_API 均未配置时）', () {
     test('默认成功：published → accepted', () async {
       final api = MockClaimApi();
       await api.claim(taskId: 't1', partnerId: 'local-dev');
@@ -36,7 +36,7 @@ void main() {
     });
   });
 
-  group('HttpClaimApi（POST {BACKEND_API}/api/tasks/{id}/claim）', () {
+  group('HttpClaimApi（POST {PROVIDER_URL}/api/tasks/{id}/claim，经 qtcrowd-provider 转发）', () {
     test('2xx → 认领成功（请求路径与 body 正确）', () async {
       late http.Request captured;
       final client = MockClient((request) async {

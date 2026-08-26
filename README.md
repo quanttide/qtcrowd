@@ -10,23 +10,29 @@
 |------|------|
 | `src/site` | 众包官网（React 19 + Vite，见 [site README](./src/site/README.md)） |
 | `src/studio` | 参与人员端工作室（Flutter Web，任务认领 + 结算，见 [studio README](./src/studio/README.md)） |
+| `src/provider` | 前台写操作代理（Go 轻量转发服务：认领/交付转发到后台，见 [provider README](./src/provider/README.md)） |
 
 ## 数据层：OSS 共享数据层
 
-前台（site / studio）读公开数据层（公开桶/CDN），写操作（认领）调后台 API：
+前台（site / studio）读公开数据层（公开桶/CDN），写操作（认领/交付）经 `src/provider`（qtcrowd-provider）转发到后台：
 
 - `QTCLOUD_CROWD_PUBLIC_URL`：公开数据源根 URL。配置后任务池从 `{url}/tasks.json`
   （404 回退 `public/tasks/index.json`）拉取 published 任务（title/description/reward/applyGuide）；
   失败页面报错不静默。未配置时：site dev 默认读本地 mock 公开桶（`src/site/public/mock/`），
   site 生产与 studio 回退打包 tasks.json（开发兜底）。
-- `QTCLOUD_CROWD_BACKEND_API`（studio，dart-define）：认领写回 `POST {url}/api/tasks/{id}/claim`
-  （body `partner_id`，published → accepted），成功写本地 `my-tasks.json`；未配置时本地 mock。
+- `QTCLOUD_CROWD_PROVIDER_URL`（studio，dart-define，默认指向本 provider）：认领写回
+  `POST {url}/api/tasks/{id}/claim`（body `partner_id`，published → accepted），qtcrowd-provider
+  转发到后台；成功写本地 `my-tasks.json`。未配置时回退 `QTCLOUD_CROWD_BACKEND_API` 直连后台，再未配置本地 mock。
+- `QTCLOUD_CROWD_BACKEND_API`（provider 环境变量，必填）：后台 API 根 URL。qtcrowd-provider 只做写操作转发
+  （`POST {url}/api/tasks/{id}/claim`、`POST {url}/api/tasks/{id}/deliver`），后台状态码与错误体透传返回。
 
 ## 开发
 
 ```bash
+# provider：前台写操作代理（QTCLOUD_CROWD_BACKEND_API 必填，默认 :8080）
+cd src/provider && QTCLOUD_CROWD_BACKEND_API=http://localhost:8081 go run ./cmd/server
 cd src/site && npm install && npm run dev
-cd src/studio && flutter pub get && flutter run -d chrome --dart-define=QTCLOUD_CROWD_BACKEND_API=http://localhost:8080
+cd src/studio && flutter pub get && flutter run -d chrome --dart-define=QTCLOUD_CROWD_PROVIDER_URL=http://localhost:8080
 ```
 
 ## 构建

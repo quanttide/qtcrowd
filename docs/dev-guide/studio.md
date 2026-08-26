@@ -10,6 +10,7 @@
 ## 0.5 当前状态（2026-08）
 
 - 已初始化 `src/studio`：**参与人员端**（Flutter Web）MVP——任务列表 / 详情 / 认领（本地记录 `data/my-tasks.json`）/ 我的结算（`data/my-settlements.json`），任务数据与 site 同一数据源（见 `src/studio/README.md`）。
+- 已新增 `src/provider`：**前台写操作代理**（Go 轻量转发服务）——认领/交付写操作经它转发到后台 qtcloud-crowd provider（`QTCLOUD_CROWD_BACKEND_API`，必填），后台状态码与错误体透传；读侧仍由 site/studio 直接读公开桶 CDN。studio 认领优先走 provider（`QTCLOUD_CROWD_PROVIDER_URL`），未配置时回退直连后台或本地 mock。
 - 尚未实现：管理端（qtcloud-crowd `src/studio` 已先行）、服务端（验收器 / 托管结算 / 归因 / 数据层），见下文角色与里程碑。
 
 ## 1. 角色工作台

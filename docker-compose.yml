@@ -1,0 +1,27 @@
+# qtcrowd provider：量潮众包前台（site/studio）的写操作代理（轻量转发服务）。
+#
+# 只做写操作转发（认领/交付）到后台 qtcloud-crowd provider；读侧不经本服务
+# （site/studio 直接读公开桶 CDN）。
+#
+# 本地开发拓扑：
+#   provider（本服务）:8080 ← site/studio 认领/交付写操作
+#   后台 qtcloud-crowd provider:8081（QTCLOUD_CROWD_BACKEND_API 指向）
+#
+# 用法：
+#   QTCLOUD_CROWD_BACKEND_API=http://localhost:8081 docker compose up --build
+services:
+  provider:
+    build:
+      context: ./src/provider
+      dockerfile: Dockerfile
+    image: ghcr.io/quanttide/qtcrowd-provider:dev
+    ports:
+      - "8080:8080"
+    environment:
+      # 后台 API 根 URL（必填）：认领/交付转发目标（未配置容器启动报错）
+      QTCLOUD_CROWD_BACKEND_API: ${QTCLOUD_CROWD_BACKEND_API:-http://localhost:8081}
+      # 监听地址（默认 :8080）
+      QTCLOUD_CROWD_ADDR: ${QTCLOUD_CROWD_ADDR:-:8080}
+      # 租户上下文（预留：当前为空不加前缀）
+      QTCLOUD_CROWD_TENANT: ${QTCLOUD_CROWD_TENANT:-}
+    restart: unless-stopped

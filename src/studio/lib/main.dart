@@ -12,10 +12,13 @@ import 'screens/task_list_screen.dart';
 
 /// 公开数据源配置（dart-define，运行时不可改）：
 ///   --dart-define=QTCLOUD_CROWD_PUBLIC_URL=https://cdn.example.com  公开桶/CDN 根 URL
-///   --dart-define=QTCLOUD_CROWD_BACKEND_API=https://api.example.com 认领写回 API 根 URL
+///   --dart-define=QTCLOUD_CROWD_PROVIDER_URL=https://api.crowd.quanttide.com 前台写操作代理（qtcrowd-provider）根 URL（默认指向本 provider）
+///   --dart-define=QTCLOUD_CROWD_BACKEND_API=https://api.example.com 后台 API 根 URL（provider 未配置时的直连回退）
 ///   --dart-define=QTCLOUD_CROWD_PARTNER_ID=<参与端身份标识>         认领 body partner_id
+/// 认领优先级：PROVIDER_URL（qtcrowd-provider 转发）→ BACKEND_API（后台直连）→ 本地 mock。
 /// 未配置时：任务目录回退打包 assets tasks.json（开发兜底）；认领走本地 mock。
 const _publicUrl = String.fromEnvironment('QTCLOUD_CROWD_PUBLIC_URL');
+const _providerUrl = String.fromEnvironment('QTCLOUD_CROWD_PROVIDER_URL');
 const _backendApi = String.fromEnvironment('QTCLOUD_CROWD_BACKEND_API');
 
 /// 仓储集合（三件套接线入口）。
@@ -36,19 +39,23 @@ class AppRepositories {
   /// 我的结算（本地 data/my-settlements.json）。
   final SettlementRepository settlements;
 
-  /// 认领写回 API（BACKEND_API 配置时调后台，否则本地 mock）。
+  /// 认领写回 API（PROVIDER_URL 配置时经 qtcrowd-provider 转发，否则 BACKEND_API
+  /// 直连后台；都未配置时本地 mock）。
   final ClaimApi claimApi;
 }
 
-/// 创建仓储：任务目录按 PUBLIC_URL 选公开数据层 / 资产兜底；认领按 BACKEND_API
-/// 选 HTTP 写回 / 本地 mock。本地认领 / 结算非 web 用 LocalFile（JSON 原子写），
-/// web 平台无 dart:io 用 InMemory。
+/// 创建仓储：任务目录按 PUBLIC_URL 选公开数据层 / 资产兜底；认领按
+/// PROVIDER_URL → BACKEND_API → 本地 mock 三级回退。本地认领 / 结算非 web 用
+/// LocalFile（JSON 原子写），web 平台无 dart:io 用 InMemory。
 AppRepositories createRepositories() {
   final tasks = _publicUrl.isNotEmpty
       ? HttpTaskRepository(_publicUrl)
       : AssetTaskRepository();
-  final claimApi =
-      _backendApi.isNotEmpty ? HttpClaimApi(_backendApi) : MockClaimApi();
+  final claimApi = _providerUrl.isNotEmpty
+      ? HttpClaimApi(_providerUrl)
+      : _backendApi.isNotEmpty
+          ? HttpClaimApi(_backendApi)
+          : MockClaimApi();
   if (kIsWeb) {
     return AppRepositories(
       tasks: tasks,

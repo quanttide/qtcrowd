@@ -8,8 +8,8 @@
 
 1. **任务列表**：公开数据层 published 任务（title / category / business / 状态 / 报酬），未认领显示「可认领」，点击进详情
 2. **任务详情**：背景 / 内容 / 输入 / 交付物 / 报酬 / 如何报名（公开层缺失的档案段落自动隐藏）
-3. **认领**：可认领任务 → 认领按钮 → **调后台 API**（`POST {BACKEND_API}/api/tasks/{id}/claim`，
-   body `partner_id`，published → accepted）→ 成功写本地认领记录（`data/my-tasks.json`）→ 展示为进行中；
+3. **认领**：可认领任务 → 认领按钮 → **调前台写操作代理**（`POST {PROVIDER_URL}/api/tasks/{id}/claim`，
+   qtcrowd-provider 转发到后台，body `partner_id`，published → accepted）→ 成功写本地认领记录（`data/my-tasks.json`）→ 展示为进行中；
    API 失败 / 非法状态**不写本地**，展示错误提示
 4. **我的结算**：结算记录（金额 / 时间），本地文件 `data/my-settlements.json`
 5. **底部导航**：任务 / 我的认领 / 结算
@@ -19,13 +19,14 @@
 | 环境变量（`--dart-define`） | 作用 | 未配置时 |
 |---|---|---|
 | `QTCLOUD_CROWD_PUBLIC_URL` | 公开数据层（公开桶/CDN）根 URL，任务列表读 `{url}/tasks.json`（404 回退 `public/tasks/index.json`） | 回退打包 `assets/data/tasks.json`（开发兜底，与 site 同源） |
-| `QTCLOUD_CROWD_BACKEND_API` | 认领写回 API 根 URL（`POST {url}/api/tasks/{id}/claim`） | 本地 mock（`MockClaimApi`，直接成功） |
+| `QTCLOUD_CROWD_PROVIDER_URL` | 前台写操作代理（qtcrowd-provider）根 URL，认领写回 `POST {url}/api/tasks/{id}/claim`（默认指向本 provider） | 回退 `QTCLOUD_CROWD_BACKEND_API` 直连后台；再未配置 → 本地 mock（`MockClaimApi`，直接成功） |
+| `QTCLOUD_CROWD_BACKEND_API` | 后台 API 根 URL（provider 未配置时的直连回退） | 本地 mock |
 | `QTCLOUD_CROWD_PARTNER_ID` | 认领 body `partner_id`（参与端身份标识） | HTTP 认领时提示配置；mock 不校验 |
 
 ```bash
 flutter run -d chrome \
   --dart-define=QTCLOUD_CROWD_PUBLIC_URL=https://cdn.example.com \
-  --dart-define=QTCLOUD_CROWD_BACKEND_API=http://localhost:8080 \
+  --dart-define=QTCLOUD_CROWD_PROVIDER_URL=http://localhost:8080 \
   --dart-define=QTCLOUD_CROWD_PARTNER_ID=partner-01
 ```
 
@@ -48,7 +49,7 @@ lib/
 ├── repositories/             # 数据访问（DDD 仓储）
 │   ├── file_store.dart       # 原子 JSON 文件存储（+ QTCLOUD_CROWD_STUDIO_DATA）
 │   ├── task_repository.dart  # 任务目录（公开数据层 Http / 资产 tasks.json 兜底，只读）
-│   ├── claim_api.dart        # 认领写回 API（HttpClaimApi / MockClaimApi）
+│   ├── claim_api.dart        # 认领写回 API（HttpClaimApi / MockClaimApi，经 provider 转发或直连后台）
 │   ├── my_task_repository.dart # 我的认领（data/my-tasks.json）
 │   └── settlement_repository.dart # 我的结算（data/my-settlements.json）
 └── screens/                  # 页面
