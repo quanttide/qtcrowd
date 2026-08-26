@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/).
 
+> 组件 scope changelog（组件独立发布，tag 前缀见下）：
+> - provider → [src/provider/CHANGELOG.md](src/provider/CHANGELOG.md)（`provider/*` tag，FC 部署，如 `provider/v0.1.0-alpha.1`）
+> - site → [src/site/CHANGELOG.md](src/site/CHANGELOG.md)（`site/*` tag，OSS/CDN 部署，如 `site/v0.1.1-beta.6`）
+
 ## [Unreleased]
 
 ### Changed

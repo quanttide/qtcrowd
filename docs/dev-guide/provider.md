@@ -58,9 +58,13 @@ go run ./cmd/server
 
 ## 部署
 
-- Docker 镜像（多阶段构建——镜像小、启动快）
+- Docker 镜像（多阶段构建——镜像小、启动快）；镜像仓库 `quanttide/qtcrowd-provider`（ACR）
 - 生产用 `QTCLOUD_CROWD_STORE=oss` + 自己桶 qtcrowd-provider（已建）
-- 部署方式对齐量潮惯例（FC 3.0 / 容器）——按需接入部署流水线
+- 部署：FC 3.0 容器（对齐 qtcloud-crowd / qtcloud-execute 模式），IaC 见 `manifests/terraform/fc.tf`，
+  `provider/*` tag 触发 `.github/workflows/deploy-provider.yml`（构建镜像 → 推 ACR → Terraform apply）
+- 环境变量（FC 注入，见 `manifests/terraform/fc.tf`）：`QTCLOUD_CROWD_BACKEND_API`（后台 API 根 URL，
+  生产指向 `https://api.quanttide.com/qtcloud-crowd`）、`QTCLOUD_OSS_BUCKET=qtcrowd-provider`、
+  `QTCLOUD_CROWD_STORE=oss`、`QTCLOUD_OSS_*` + `ALIYUN_OSS_*`（双写）、`QTCLOUD_CROWD_SYNC_INTERVAL`
 
 ## 未来（多租户预留）
 

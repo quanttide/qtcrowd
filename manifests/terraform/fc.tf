@@ -1,0 +1,101 @@
+# ============================================================
+# provider（qtcrowd-provider）—— 阿里云 FC 3.0 容器部署
+#
+# qtcrowd-provider：量潮众包前台（site/studio）的唯一服务端——上架 + 数据 API + 写操作转发：
+#   1. 上架：从后台 qtcloud-crowd provider 拉取可上架任务
+#      （GET {BACKEND}/api/tasks?status=published）→ 写自己桶 qtcrowd-provider
+#      黄页快照（public/tasks/{id}.json）
+#   2. 数据 API：GET /api/tasks 从自己桶读黄页快照返回（site/studio 不再直读 OSS/CDN）
+#   3. 写操作转发：认领/交付 → 后台（状态码与错误体透传，后台不可达 502）
+#
+# 数据：运行时 OSS store（QTCLOUD_CROWD_STORE=oss），自己桶 qtcrowd-provider——
+#   **桶已存在（手动创建），本文件只引用（var.oss_provider_bucket），不创建 OSS 桶资源**
+# 凭证：provider 通过环境变量读取静态 AK/SK 访问 OSS（见 src/provider/internal/store/oss.go
+#   与 cmd/server/main.go——代码读取的是 QTCLOUD_OSS_* 前缀，与 qtcloud-execute 的
+#   ALIYUN_OSS_* 不同）；故 FC 函数环境变量注入 QTCLOUD_OSS_*，另双写 ALIYUN_OSS_*
+#   对齐 qtcloud-execute 惯例（冗余，代码不读取）。此 AK/SK 会明文落入 tfstate，
+#   生产环境建议后续改用 FC 密钥管理/配置中心注入。
+# ============================================================
+
+# FC 默认角色：允许 FC 服务挂载弹性网卡访问 VPC（应用级，保留与 sibling 模板一致）
+resource "alicloud_ram_role" "fc" {
+  role_name                   = "${local.app_name_prefix}-fc"
+  assume_role_policy_document = <<EOF
+{
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": ["fc.aliyuncs.com"]
+      }
+    }
+  ],
+  "Version": "1"
+}
+EOF
+  description                 = "Function Compute 默认角色（qtcrowd-provider）"
+}
+
+resource "alicloud_ram_role_policy_attachment" "fc_vpc" {
+  policy_name = "AliyunECSNetworkInterfaceManagementAccess"
+  policy_type = "System"
+  role_name   = alicloud_ram_role.fc.role_name
+}
+
+# 函数计算（FC 3.0）：custom-container 容器镜像（ACR quanttide/qtcrowd-provider），
+# 运行时 OSS store（自己桶 qtcrowd-provider——已建，只引用）
+resource "alicloud_fcv3_function" "this" {
+  function_name   = local.app_name_prefix
+  description     = "qtcrowd-provider 前台唯一服务端（上架 + 数据 API + 写操作转发）"
+  runtime         = "custom-container"
+  handler         = "index.handler" # custom-container 必填占位，实际由容器监听端口决定
+  cpu             = 0.5
+  memory_size     = var.fc_memory
+  disk_size       = 512 # FC 3.0 必填（MB）
+  timeout         = var.fc_timeout
+  internet_access = true
+  role            = alicloud_ram_role.fc.arn
+
+  custom_container_config {
+    image = var.image
+    port  = 8080
+  }
+
+  # 对齐 provider 运行时约定（见 src/provider/cmd/server/main.go）：
+  #   QTCLOUD_CROWD_STORE=oss 走 OSS；QTCLOUD_CROWD_BACKEND_API 后台 API 根 URL（必填——
+  #   上架拉取 + 认领/交付转发目标）；QTCLOUD_OSS_BUCKET=自己桶 qtcrowd-provider（已建）；
+  #   QTCLOUD_CROWD_SYNC_INTERVAL 周期上架间隔（默认 5m，0 = 仅启动时上架一次）
+  environment_variables = {
+    QTCLOUD_CROWD_STORE           = "oss"
+    QTCLOUD_CROWD_BACKEND_API     = var.backend_api
+    QTCLOUD_CROWD_ADDR            = ":8080"
+    QTCLOUD_CROWD_SYNC_INTERVAL   = var.sync_interval
+    QTCLOUD_OSS_BUCKET            = var.oss_provider_bucket
+    QTCLOUD_OSS_ENDPOINT          = var.oss_endpoint
+    QTCLOUD_OSS_ACCESS_KEY_ID     = var.oss_access_key_id
+    QTCLOUD_OSS_ACCESS_KEY_SECRET = var.oss_access_key_secret
+    # 对齐 qtcloud-execute 惯例双写（冗余；代码实际读取 QTCLOUD_OSS_*）
+    ALIYUN_OSS_BUCKET        = var.oss_provider_bucket
+    ALIYUN_OSS_ENDPOINT      = var.oss_endpoint
+    ALIYUN_ACCESS_KEY_ID     = var.oss_access_key_id
+    ALIYUN_ACCESS_KEY_SECRET = var.oss_access_key_secret
+  }
+
+  tags = {
+    project     = var.project
+    environment = var.environment
+  }
+}
+
+# HTTP 触发器：直接访问（后续经系统级 API 网关统一接入，此触发器保留为直连通道）
+resource "alicloud_fcv3_trigger" "http" {
+  function_name = alicloud_fcv3_function.this.function_name
+  trigger_name  = "http"
+  trigger_type  = "http"
+  qualifier     = "LATEST"
+  trigger_config = jsonencode({
+    authType = "anonymous"
+    methods  = ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"]
+  })
+}

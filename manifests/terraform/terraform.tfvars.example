@@ -1,0 +1,14 @@
+# 复制为 terraform.tfvars 并按需修改
+region           = "cn-hangzhou"
+
+# site（React+Vite 官网，deploy-site.yml）桶
+oss_bucket_name  = "qtcrowd-site"
+
+# provider（qtcrowd-provider FC 容器，deploy-provider.yml）
+environment          = "prod"
+image                = "<ACR实例公网地址>/quanttide/qtcrowd-provider:latest" # 敏感，勿入库；CI 用 TF_VAR_image 注入
+backend_api          = "https://api.quanttide.com/qtcloud-crowd"             # 后台 API 根 URL（必填；qtcloud-crowd API 网关）
+oss_provider_bucket  = "qtcrowd-provider"                                    # 自有桶已建（手动）——只引用不创建
+oss_endpoint         = "oss-cn-hangzhou.aliyuncs.com"
+sync_interval        = "5m" # 周期上架间隔（0 = 仅启动时上架一次）
+# oss_access_key_id / oss_access_key_secret：provider 运行时访问 OSS 的 AK/SK，敏感，勿入库；CI 用 TF_VAR_* 注入
