@@ -30,3 +30,20 @@ output "oss_provider_bucket" {
   description = "qtcrowd-provider 自有 OSS 桶名（已建，只引用不创建）"
   value       = var.oss_provider_bucket
 }
+
+# ============================================================
+# API 网关输出（对齐 qtcloud-crowd 惯例——网关手动配置，此处记录清单）
+# ============================================================
+output "apigateway_domain" {
+  description = "API 网关子域名（DNS CNAME 已配置 api.quanttide.com）"
+  value       = "34c138c4bec1405d942a57d9bb5ede37-cn-hangzhou.alicloudapi.com"
+}
+
+output "apigateway_apis" {
+  description = "API 网关 API 列表（qtcrowd-provider——前台唯一入口）"
+  value = {
+    tasks        = "/qtcrowd/api/tasks"
+    task_claim   = "/qtcrowd/api/tasks/{id}/claim"
+    task_deliver = "/qtcrowd/api/tasks/{id}/deliver"
+  }
+}
