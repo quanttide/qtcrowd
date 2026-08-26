@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/).
 
-## [Unreleased]
+## [0.1.1-beta.6] - 2026-08-26
+
+### Added
+
+- 前台 OSS 共享数据层：公开数据源配置 `QTCLOUD_CROWD_PUBLIC_URL`（公开桶/CDN 根 URL），site/studio 任务池同源读公开数据层（published 任务）
+- site：任务池改为公开数据源拉取（404 回退 `public/tasks/index.json`），loading/error/空态三态 + 重试；vitest 数据源切换测试
+- studio：HttpTaskRepository 读公开层 + HttpClaimApi 认领写回（409 提示）；66 测试全绿
+- 部署：deploy-site.yml SPA 深链 200（/tasks 及 /tasks/<name> 无扩展名 key）
 
 ## [0.1.1-rc.1] - 2026-08-25
 
