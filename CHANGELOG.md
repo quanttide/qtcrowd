@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.1-beta.6] - 2026-08-26
 
 ### 新增
 
