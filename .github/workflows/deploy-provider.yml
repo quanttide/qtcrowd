@@ -131,11 +131,7 @@ jobs:
       # 不带 -target 会把 site 资源纳入本 state 导致冲突）
       - name: Terraform Plan
         working-directory: manifests/terraform
-        run: terraform plan -input=false -no-color -out=tfplan \
-          -target=alicloud_ram_role.fc \
-          -target=alicloud_ram_role_policy_attachment.fc_vpc \
-          -target=alicloud_fcv3_function.this \
-          -target=alicloud_fcv3_trigger.http
+        run: terraform plan -input=false -no-color -out=tfplan -target=alicloud_ram_role.fc -target=alicloud_ram_role_policy_attachment.fc_vpc -target=alicloud_fcv3_function.this -target=alicloud_fcv3_trigger.http
 
       - name: Terraform Apply
         working-directory: manifests/terraform
