@@ -1,10 +1,14 @@
-# qtcrowd provider：量潮众包前台（site/studio）的写操作代理（轻量转发服务）。
+# qtcrowd provider：量潮众包前台（site/studio）的唯一服务端——上架 + 数据 API + 写操作转发。
 #
-# 只做写操作转发（认领/交付）到后台 qtcloud-crowd provider；读侧不经本服务
-# （site/studio 直接读公开桶 CDN）。
+# 定稿架构：
+#   上架：拉取后台 published 任务（GET {BACKEND}/api/tasks?status=published）→ 写自己桶
+#     （public/tasks/{id}.json 黄页快照）；周期同步（QTCLOUD_CROWD_SYNC_INTERVAL，默认 5m）
+#     + 手动触发（POST /api/admin/sync）。
+#   数据 API：GET /api/tasks 从自己桶读黄页快照（site/studio 不再直读 OSS/CDN）。
+#   写操作转发保留：认领/交付 → 后台。
 #
 # 本地开发拓扑：
-#   provider（本服务）:8080 ← site/studio 认领/交付写操作
+#   provider（本服务）:8080 ← site/studio 数据 API + 认领/交付写操作
 #   后台 qtcloud-crowd provider:8081（QTCLOUD_CROWD_BACKEND_API 指向）
 #
 # 用法：
@@ -18,10 +22,21 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # 后台 API 根 URL（必填）：认领/交付转发目标（未配置容器启动报错）
+      # 后台 API 根 URL（必填）：上架拉取 + 认领/交付转发目标（未配置容器启动报错）
       QTCLOUD_CROWD_BACKEND_API: ${QTCLOUD_CROWD_BACKEND_API:-http://localhost:8081}
       # 监听地址（默认 :8080）
       QTCLOUD_CROWD_ADDR: ${QTCLOUD_CROWD_ADDR:-:8080}
       # 租户上下文（预留：当前为空不加前缀）
       QTCLOUD_CROWD_TENANT: ${QTCLOUD_CROWD_TENANT:-}
+      # 存储后端：local（默认，开发）/ oss（生产，自己桶 qtcrowd-provider）
+      QTCLOUD_CROWD_STORE: ${QTCLOUD_CROWD_STORE:-local}
+      # 本地存储数据根目录（local 模式）
+      QTCLOUD_CROWD_DATA_DIR: ${QTCLOUD_CROWD_DATA_DIR:-data}
+      # OSS 配置（oss 模式；BUCKET=qtcrowd-provider 自己桶）
+      QTCLOUD_OSS_ENDPOINT: ${QTCLOUD_OSS_ENDPOINT:-}
+      QTCLOUD_OSS_BUCKET: ${QTCLOUD_OSS_BUCKET:-}
+      QTCLOUD_OSS_ACCESS_KEY_ID: ${QTCLOUD_OSS_ACCESS_KEY_ID:-}
+      QTCLOUD_OSS_ACCESS_KEY_SECRET: ${QTCLOUD_OSS_ACCESS_KEY_SECRET:-}
+      # 周期上架间隔（默认 5m；0 或无效值 = 仅启动时上架一次）
+      QTCLOUD_CROWD_SYNC_INTERVAL: ${QTCLOUD_CROWD_SYNC_INTERVAL:-5m}
     restart: unless-stopped

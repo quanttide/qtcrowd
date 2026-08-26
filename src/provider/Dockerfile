@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- 构建阶段 ----
-# qtcrowd-provider 无 CGO 依赖（纯 Go 标准库，无外部模块），静态链接产物，
+# qtcrowd-provider 无 CGO 依赖（纯 Go，无 cgo），静态链接产物，
 # 可直接运行于 alpine（无需 gcc/musl-dev 工具链）。对齐 qtcloud-crowd provider 模板。
 FROM golang:1.26-alpine AS build
 
@@ -12,8 +12,8 @@ WORKDIR /src
 ARG GOPROXY=https://goproxy.cn,direct
 ENV GOPROXY=${GOPROXY}
 
-# 仅 go.mod（无 go.sum——纯标准库无第三方依赖）；先拷贝模块文件，利用构建缓存
-COPY go.mod ./
+# 拷贝模块文件（go.mod + go.sum——含 aliyun OSS SDK 依赖），利用构建缓存
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .

@@ -31,7 +31,7 @@ class TaskStatusChip extends StatelessWidget {
 
 /// 任务列表（参与端入口）：展示 title / category / business / 状态 / 报酬。
 ///
-/// 任务来自公开数据层（published 任务）：PUBLIC_URL 配置时读公开桶/CDN，
+/// 任务来自 qtcrowd-provider 数据 API（published 任务）：PROVIDER_URL 配置时读数据 API，
 /// 未配置时回退打包 assets tasks.json（开发兜底）。未认领状态显示「可认领」；
 /// 已被我认领的任务展示为进行中（本地认领记录）。
 class TaskListScreen extends StatefulWidget {

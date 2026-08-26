@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+### Changed
+
+- **qtcrowd-provider 定稿架构（前台唯一服务端）**：上架 + 数据 API + 写操作转发
+  - 上架：provider 拉取后台 published 任务（`GET {BACKEND}/api/tasks?status=published`）→ 写自己桶
+    qtcrowd-provider（`public/tasks/{id}.json` 黄页快照 title/description/reward/apply_guide）；
+    周期同步（`QTCLOUD_CROWD_SYNC_INTERVAL`，默认 5m）+ `POST /api/admin/sync` 手动触发；
+    认领/关闭的任务下次同步清理（撤回语义）；后台不可达/非 2xx 上架失败不静默（502）
+  - 数据 API：`GET /api/tasks` 从自己桶读黄页快照返回 `{tasks: [...]}`——site/studio 不再直读 OSS/CDN
+  - 转发保留：`POST /api/tasks/{id}/claim`、`/deliver` 仍转发后台（4xx/5xx 透传、后台不可达 502）
+  - 存储：`QTCLOUD_CROWD_STORE`（local 开发 / oss 生产，`QTCLOUD_OSS_BUCKET`=自己桶 qtcrowd-provider）
+- site：任务数据改从 qtcrowd-provider 数据 API 拉取（`QTCLOUD_CROWD_PUBLIC_URL` → `QTCLOUD_CROWD_PROVIDER_URL`，
+  fetch `{PROVIDER}/api/tasks`）；dev mock 改为模拟数据 API（`public/mock/api/tasks.json`）；
+  黄页快照解析兼容 `apply_guide` / 字符串 reward / `status=published`（视为可接）
+- studio：任务列表改经 qtcrowd-provider 数据 API（读+写都经它，`QTCLOUD_CROWD_PUBLIC_URL` 移除）；
+  黄页快照解析兼容 `apply_guide` / 字符串 reward / `status=published`（视为可认领）
+
 ### Added
 
 - `src/provider`：qtcrowd-provider——前台写操作代理（Go 轻量转发服务）

@@ -133,6 +133,16 @@ class Task {
     List<TaskReference> references(String key) =>
         (json[key] as List?)?.whereType<Map<String, dynamic>>().map(TaskReference.fromJson).toList() ?? const [];
 
+    // 黄页快照（qtcrowd-provider 数据 API）字段兼容：reward / apply_guide 为字符串或
+    // 数组（快照 = 后台黄页模型视图 apply_guide；档案 tasks.json 用 applyGuide）。
+    List<String> rewardOrList(Object? v) => switch (v) {
+          final String s => [s],
+          final List l => l.whereType<String>().toList(),
+          _ => const [],
+        };
+    final applyGuide = strings('applyGuide');
+    final reward = rewardOrList(json['reward']);
+
     return Task(
       name: json['name'] as String? ?? '',
       title: json['title'] as String? ?? '',
@@ -145,9 +155,11 @@ class Task {
       input: strings('input'),
       reference: references('reference'),
       deliverables: strings('deliverables'),
-      reward: strings('reward'),
+      reward: reward,
       others: strings('others'),
-      applyGuide: strings('applyGuide'),
+      applyGuide: applyGuide.isNotEmpty
+          ? applyGuide
+          : rewardOrList(json['apply_guide']),
     );
   }
 

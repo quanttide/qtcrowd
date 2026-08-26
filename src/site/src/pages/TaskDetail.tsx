@@ -61,7 +61,7 @@ export default function TaskDetail() {
     return (
       <div className="page task-page">
         <Link to="/" className="back-link">&larr; 首页</Link>
-        <h1>公开数据源加载失败</h1>
+        <h1>任务数据源加载失败</h1>
         <p className="contact-note">{state.message}</p>
         <button type="button" onClick={() => void reload()}>
           重试

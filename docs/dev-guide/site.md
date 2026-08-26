@@ -5,6 +5,7 @@
 - `site` = 公网信息展示站（黄页，`crowd.quanttide.com`），只做信息展示，不是交易平台。
 - 展示量潮众包正在发的任务与参与方式，把行动引流到真实接单入口（联系邮箱报名）。
 - 真实数据源：父仓库 `quanttide-crowd` 下的 `data/profile`（见 `AGENTS.md`）；站点任务数据由脚本生成并校验一致，不自创占位 / 示例数据。
+- 运行时任务池：qtcrowd-provider 数据 API（`QTCLOUD_CROWD_PROVIDER_URL` 配置时 fetch `{url}/api/tasks`，见 [provider dev-guide](./provider.md)）；`data/profile` 生成的 tasks.json 是未配置时的开发兜底。
 
 ## 1. 现状
 

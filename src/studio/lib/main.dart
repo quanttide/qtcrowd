@@ -10,14 +10,13 @@ import 'screens/my_tasks_screen.dart';
 import 'screens/settlement_screen.dart';
 import 'screens/task_list_screen.dart';
 
-/// 公开数据源配置（dart-define，运行时不可改）：
-///   --dart-define=QTCLOUD_CROWD_PUBLIC_URL=https://cdn.example.com  公开桶/CDN 根 URL
-///   --dart-define=QTCLOUD_CROWD_PROVIDER_URL=https://api.crowd.quanttide.com 前台写操作代理（qtcrowd-provider）根 URL（默认指向本 provider）
+/// 数据源配置（dart-define，运行时不可改）：
+///   --dart-define=QTCLOUD_CROWD_PROVIDER_URL=https://api.crowd.quanttide.com 前台唯一服务端（qtcrowd-provider）根 URL：任务列表读 + 认领/交付写都经它
 ///   --dart-define=QTCLOUD_CROWD_BACKEND_API=https://api.example.com 后台 API 根 URL（provider 未配置时的直连回退）
 ///   --dart-define=QTCLOUD_CROWD_PARTNER_ID=<参与端身份标识>         认领 body partner_id
-/// 认领优先级：PROVIDER_URL（qtcrowd-provider 转发）→ BACKEND_API（后台直连）→ 本地 mock。
-/// 未配置时：任务目录回退打包 assets tasks.json（开发兜底）；认领走本地 mock。
-const _publicUrl = String.fromEnvironment('QTCLOUD_CROWD_PUBLIC_URL');
+/// 读：PROVIDER_URL 配置时经 qtcrowd-provider 数据 API（{url}/api/tasks）；未配置回退打包
+/// assets tasks.json（开发兜底）。
+/// 写：PROVIDER_URL（qtcrowd-provider 转发）→ BACKEND_API（后台直连）→ 本地 mock。
 const _providerUrl = String.fromEnvironment('QTCLOUD_CROWD_PROVIDER_URL');
 const _backendApi = String.fromEnvironment('QTCLOUD_CROWD_BACKEND_API');
 
@@ -30,7 +29,7 @@ class AppRepositories {
     required this.claimApi,
   });
 
-  /// 任务目录（公开数据层：PUBLIC_URL 配置时读公开桶，否则资产 tasks.json 兜底）。
+  /// 任务目录（qtcrowd-provider 数据 API：PROVIDER_URL 配置时，否则资产 tasks.json 兜底）。
   final TaskRepository tasks;
 
   /// 我的认领（本地 data/my-tasks.json，QTCLOUD_CROWD_STUDIO_DATA 可覆盖目录）。
@@ -44,12 +43,12 @@ class AppRepositories {
   final ClaimApi claimApi;
 }
 
-/// 创建仓储：任务目录按 PUBLIC_URL 选公开数据层 / 资产兜底；认领按
+/// 创建仓储：任务目录按 PROVIDER_URL 选 qtcrowd-provider 数据 API / 资产兜底；认领按
 /// PROVIDER_URL → BACKEND_API → 本地 mock 三级回退。本地认领 / 结算非 web 用
 /// LocalFile（JSON 原子写），web 平台无 dart:io 用 InMemory。
 AppRepositories createRepositories() {
-  final tasks = _publicUrl.isNotEmpty
-      ? HttpTaskRepository(_publicUrl)
+  final tasks = _providerUrl.isNotEmpty
+      ? HttpTaskRepository(_providerUrl)
       : AssetTaskRepository();
   final claimApi = _providerUrl.isNotEmpty
       ? HttpClaimApi(_providerUrl)

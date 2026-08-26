@@ -30,7 +30,7 @@ export default function Home() {
 
         {state.status === "error" && (
           <div className="catalog-error" role="alert">
-            <p>公开数据源加载失败，请稍后重试或联系量潮。</p>
+            <p>任务数据源加载失败，请稍后重试或联系量潮。</p>
             <p className="catalog-error-detail">{state.message}</p>
             <button type="button" onClick={() => void reload()}>
               重试

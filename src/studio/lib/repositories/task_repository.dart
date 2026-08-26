@@ -25,7 +25,7 @@ class InMemoryTaskRepository implements TaskRepository {
   Future<Task?> findByName(String name) async => _items[name];
 }
 
-/// 资产实现：从打包的 assets/data/tasks.json 读取任务目录（PUBLIC_URL 未配置时的开发兜底）。
+/// 资产实现：从打包的 assets/data/tasks.json 读取任务目录（PROVIDER_URL 未配置时的开发兜底）。
 ///
 /// 该文件由 scripts/sync-tasks.mjs 从 site 的 tasks.json 同步
 /// （同一数据源，与 site 一致），见 AGENTS.md。
@@ -50,10 +50,10 @@ class AssetTaskRepository implements TaskRepository {
   }
 }
 
-/// 公开数据层实现：从公开桶/CDN（QTCLOUD_CROWD_PUBLIC_URL）拉取 published 任务。
+/// qtcrowd-provider 数据 API 实现：从数据 API（QTCLOUD_CROWD_PROVIDER_URL）拉取任务目录。
 ///
-/// 与 site 同源：先试 {url}/tasks.json 聚合，404/失败回退 {url}/public/tasks/index.json
-/// （对应后台发布的 public/tasks/{id}.json 列表）；全部失败抛错不静默。
+/// 定稿架构：读+写都经 qtcrowd-provider——fetch {base}/api/tasks（自己桶黄页快照，
+/// published 任务），不再直读公开桶 OSS/CDN。
 /// 公开任务主键是 id（public/tasks/{id}.json），缺 name 时回退用 id。
 class HttpTaskRepository implements TaskRepository {
   HttpTaskRepository(this.baseUrl, {http.Client? client})
@@ -64,29 +64,19 @@ class HttpTaskRepository implements TaskRepository {
 
   @override
   Future<List<Task>> findAll() async {
-    final candidates = [
-      '$baseUrl/tasks.json',
-      '$baseUrl/public/tasks/index.json',
-    ];
-    Object? lastError = Exception('公开数据源不可用：$baseUrl');
-    for (final url in candidates) {
-      try {
-        final res = await _client.get(Uri.parse(url));
-        if (res.statusCode != 200) {
-          lastError = Exception('公开数据源 $url 返回 HTTP ${res.statusCode}');
-          continue;
-        }
-        final tasks = parsePublishedTaskCatalog(res.body);
-        if (tasks.isEmpty) {
-          // 聚合存在但内容为空 → 视为已拉取成功（当前无可接任务）
-          return const [];
-        }
-        return List.unmodifiable(tasks);
-      } catch (e) {
-        lastError = e;
+    final base = baseUrl.replaceFirst(RegExp(r'/+$'), '');
+    final url = '$base/api/tasks';
+    try {
+      final res = await _client.get(Uri.parse(url));
+      if (res.statusCode != 200) {
+        throw Exception('任务数据源 $url 返回 HTTP ${res.statusCode}');
       }
+      final tasks = parsePublishedTaskCatalog(res.body);
+      return List.unmodifiable(tasks);
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('任务数据源不可用：$url（$e）');
     }
-    throw lastError!;
   }
 
   @override

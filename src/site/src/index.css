@@ -293,7 +293,7 @@ ul {
   margin: 0;
 }
 
-/* 公开数据源加载态（fetch 失败不静默） */
+/* 任务数据源加载态（fetch 失败不静默） */
 .catalog-note {
   color: #666;
 }
