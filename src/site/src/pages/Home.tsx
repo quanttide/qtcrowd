@@ -1,8 +1,22 @@
 import { Link } from "react-router-dom";
-import { tasks, STATUS_AVAILABILITY } from "../data/tasks";
+import { STATUS_AVAILABILITY } from "../data/tasks";
+import type { PublishedTask } from "../data/publicTasks";
+import { useTaskCatalog } from "../hooks/useTaskCatalog";
 import { CONTACT_ITEMS } from "../data/site";
 
+/** 可接性标签：公开层任务均为 published（无 status 字段）→ 显示「可接」；
+ * tasks.json 兜底按档案状态显示。 */
+function availability(task: PublishedTask): string {
+  return task.status ? STATUS_AVAILABILITY[task.status] : "可接";
+}
+
+function taskMeta(task: PublishedTask): string {
+  return [task.business, task.category].filter(Boolean).join(" · ");
+}
+
 export default function Home() {
+  const { state, reload } = useTaskCatalog();
+
   return (
     <div className="page home">
       <section className="hero">
@@ -12,19 +26,36 @@ export default function Home() {
 
       <section className="section">
         <h2>可接任务</h2>
-        <div className="task-grid">
-          {tasks.map(task => (
-            <Link to={`/tasks/${task.name}`} className="task-card" key={task.name}>
-              <div className="task-card-head">
-                <span className="task-card-title">{task.title}</span>
-                <span className="status-tag">{STATUS_AVAILABILITY[task.status]}</span>
-              </div>
-              <p className="task-card-desc">{task.description}</p>
-              <p className="task-card-meta">{task.business} · {task.category} · {task.status}</p>
-              <p className="task-card-reward">{task.reward[0]}</p>
-            </Link>
+        {state.status === "loading" && <p className="catalog-note">任务加载中…</p>}
+
+        {state.status === "error" && (
+          <div className="catalog-error" role="alert">
+            <p>公开数据源加载失败，请稍后重试或联系量潮。</p>
+            <p className="catalog-error-detail">{state.message}</p>
+            <button type="button" onClick={() => void reload()}>
+              重试
+            </button>
+          </div>
+        )}
+
+        {state.status === "ready" &&
+          (state.tasks.length === 0 ? (
+            <p className="catalog-note">当前没有可接任务，敬请期待。</p>
+          ) : (
+            <div className="task-grid">
+              {state.tasks.map(task => (
+                <Link to={`/tasks/${task.id}`} className="task-card" key={task.id}>
+                  <div className="task-card-head">
+                    <span className="task-card-title">{task.title}</span>
+                    <span className="status-tag">{availability(task)}</span>
+                  </div>
+                  <p className="task-card-desc">{task.description}</p>
+                  {taskMeta(task) && <p className="task-card-meta">{taskMeta(task)}</p>}
+                  {task.reward[0] && <p className="task-card-reward">{task.reward[0]}</p>}
+                </Link>
+              ))}
+            </div>
           ))}
-        </div>
       </section>
 
       <section className="section">

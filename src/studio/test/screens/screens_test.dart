@@ -4,6 +4,7 @@ import 'package:qtcrowd_studio/main.dart';
 import 'package:qtcrowd_studio/models/my_claim.dart';
 import 'package:qtcrowd_studio/models/settlement.dart';
 import 'package:qtcrowd_studio/models/task.dart';
+import 'package:qtcrowd_studio/repositories/claim_api.dart';
 import 'package:qtcrowd_studio/repositories/my_task_repository.dart';
 import 'package:qtcrowd_studio/repositories/settlement_repository.dart';
 import 'package:qtcrowd_studio/repositories/task_repository.dart';
@@ -43,7 +44,11 @@ void main() {
         sampleTask('t2', status: TaskStatus.closed),
       ]);
       await tester.pumpWidget(
-        wrap(TaskListScreen(repository: repo, myTasks: InMemoryMyTaskRepository())),
+        wrap(TaskListScreen(
+          repository: repo,
+          myTasks: InMemoryMyTaskRepository(),
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
 
@@ -51,7 +56,7 @@ void main() {
       expect(find.text('任务t2'), findsOneWidget);
       expect(find.text('量潮云'), findsNWidgets(2));
       expect(find.text('招聘考核'), findsNWidgets(2));
-      expect(find.text('待认领'), findsOneWidget);
+      expect(find.text('可认领'), findsOneWidget);
       expect(find.text('已关闭'), findsOneWidget);
       expect(find.textContaining('报酬：'), findsNWidgets(2));
     });
@@ -66,18 +71,26 @@ void main() {
       ]);
       final repo = InMemoryTaskRepository([sampleTask('t1')]);
       await tester.pumpWidget(
-        wrap(TaskListScreen(repository: repo, myTasks: myTasks)),
+        wrap(TaskListScreen(
+          repository: repo,
+          myTasks: myTasks,
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('进行中'), findsOneWidget);
-      expect(find.text('待认领'), findsNothing);
+      expect(find.text('可认领'), findsNothing);
     });
 
     testWidgets('点击任务卡片进入详情页', (tester) async {
       final repo = InMemoryTaskRepository([sampleTask('t1')]);
       await tester.pumpWidget(
-        wrap(TaskListScreen(repository: repo, myTasks: InMemoryMyTaskRepository())),
+        wrap(TaskListScreen(
+          repository: repo,
+          myTasks: InMemoryMyTaskRepository(),
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
 
@@ -93,7 +106,11 @@ void main() {
     testWidgets('渲染结构化段落：背景 / 内容 / 输入 / 交付物 / 报酬 / 报名', (tester) async {
       final task = sampleTask('t1');
       await tester.pumpWidget(
-        wrap(TaskDetailScreen(task: task, myTasks: InMemoryMyTaskRepository())),
+        wrap(TaskDetailScreen(
+          task: task,
+          myTasks: InMemoryMyTaskRepository(),
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
 
@@ -110,11 +127,15 @@ void main() {
       expect(find.text('· 发邮件至 crowd@quanttide.com 报名；'), findsOneWidget);
     });
 
-    testWidgets('待认领任务显示认领按钮，点击后本地记录并变为进行中', (tester) async {
+    testWidgets('认领流程：调后台 API（mock 成功）→ 本地记录 → 变为进行中', (tester) async {
       final task = sampleTask('t1');
       final myTasks = InMemoryMyTaskRepository();
       await tester.pumpWidget(
-        wrap(TaskDetailScreen(task: task, myTasks: myTasks)),
+        wrap(TaskDetailScreen(
+          task: task,
+          myTasks: myTasks,
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
 
@@ -126,15 +147,62 @@ void main() {
       expect(claim, isNotNull);
       expect(claim!.taskTitle, '任务t1');
       expect(claim.claimedAt, isNotEmpty);
-      // 认领后展示为进行中（本地状态，不写管理端）
+      // 认领后展示为进行中（本地记录，后台已 accepted）
       expect(find.text('已认领 · 进行中'), findsOneWidget);
-      expect(find.text('待认领'), findsNothing);
+      expect(find.text('可认领'), findsNothing);
+    });
+
+    testWidgets('认领失败路径：API 网络失败 → 错误提示且不写本地记录', (tester) async {
+      final task = sampleTask('t1');
+      final myTasks = InMemoryMyTaskRepository();
+      await tester.pumpWidget(
+        wrap(TaskDetailScreen(
+          task: task,
+          myTasks: myTasks,
+          claimApi: MockClaimApi(MockClaimBehavior.networkFailure),
+        )),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('认领任务'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('网络错误'), findsOneWidget);
+      expect(await myTasks.findByTaskName('t1'), isNull,
+          reason: 'API 失败不写本地认领记录');
+      // 仍展示待认领（可重试）
+      expect(find.text('认领任务'), findsOneWidget);
+    });
+
+    testWidgets('认领失败路径：非法状态（mock 409）→ 错误提示且不写本地记录', (tester) async {
+      final task = sampleTask('t1');
+      final myTasks = InMemoryMyTaskRepository();
+      await tester.pumpWidget(
+        wrap(TaskDetailScreen(
+          task: task,
+          myTasks: myTasks,
+          claimApi: MockClaimApi(MockClaimBehavior.invalidState),
+        )),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('认领任务'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('任务状态已变化'), findsOneWidget);
+      expect(await myTasks.findByTaskName('t1'), isNull,
+          reason: '非法状态不写本地认领记录');
+      expect(find.text('认领任务'), findsOneWidget);
     });
 
     testWidgets('进行中 / 已关闭任务不可认领', (tester) async {
       final inProgress = sampleTask('t2', status: TaskStatus.inProgress);
       await tester.pumpWidget(
-        wrap(TaskDetailScreen(task: inProgress, myTasks: InMemoryMyTaskRepository())),
+        wrap(TaskDetailScreen(
+          task: inProgress,
+          myTasks: InMemoryMyTaskRepository(),
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
       expect(find.text('已认领 · 进行中'), findsOneWidget);
@@ -142,7 +210,11 @@ void main() {
 
       final closed = sampleTask('t3', status: TaskStatus.closed);
       await tester.pumpWidget(
-        wrap(TaskDetailScreen(task: closed, myTasks: InMemoryMyTaskRepository())),
+        wrap(TaskDetailScreen(
+          task: closed,
+          myTasks: InMemoryMyTaskRepository(),
+          claimApi: MockClaimApi(),
+        )),
       );
       await tester.pumpAndSettle();
       expect(find.text('已关闭 · 不可认领'), findsOneWidget);
@@ -236,6 +308,7 @@ void main() {
           tasks: InMemoryTaskRepository([sampleTask('t1')]),
           myTasks: InMemoryMyTaskRepository(),
           settlements: InMemorySettlementRepository(),
+          claimApi: MockClaimApi(),
         ),
       );
       await tester.pumpWidget(app);

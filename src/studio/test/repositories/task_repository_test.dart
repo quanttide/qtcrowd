@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:qtcrowd_studio/models/task.dart';
 import 'package:qtcrowd_studio/repositories/task_repository.dart';
 
@@ -91,6 +93,79 @@ void main() {
         expect(task.reward, isNotEmpty, reason: '明码标价：报酬不能为空');
         expect(task.applyGuide, isNotEmpty, reason: '如何报名不能为空');
       }
+    });
+  });
+
+  group('HttpTaskRepository（公开数据层：QTCLOUD_CROWD_PUBLIC_URL）', () {
+    const publishedCatalog = {
+      'tasks': [
+        {
+          'id': 't1',
+          'title': '公开任务一',
+          'description': '一句话',
+          'reward': ['100 元'],
+          'applyGuide': ['发邮件报名'],
+        },
+      ],
+    };
+
+    test('从公开数据源拉取 published 任务（聚合 tasks.json）', () async {
+      final client = MockClient((request) async {
+        expect(request.url.toString(), 'https://cdn.example.com/tasks.json');
+        return http.Response(
+            jsonEncode(publishedCatalog), 200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+      });
+      final repo = HttpTaskRepository('https://cdn.example.com', client: client);
+
+      final tasks = await repo.findAll();
+      expect(tasks, hasLength(1));
+      expect(tasks.single.name, 't1', reason: '公开任务主键 id 回退 name');
+      expect(tasks.single.title, '公开任务一');
+      expect(tasks.single.reward, ['100 元']);
+      expect(tasks.single.applyGuide, ['发邮件报名']);
+    });
+
+    test('聚合 tasks.json 404 → 回退 public/tasks/index.json', () async {
+      final client = MockClient((request) async {
+        if (request.url.path.endsWith('/tasks.json')) {
+          return http.Response('not found', 404);
+        }
+        return http.Response(
+            jsonEncode(publishedCatalog), 200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+      });
+      final repo = HttpTaskRepository('https://cdn.example.com', client: client);
+
+      final tasks = await repo.findAll();
+      expect(tasks, hasLength(1));
+      expect(tasks.single.name, 't1');
+    });
+
+    test('findByName 从公开数据源查找', () async {
+      final client = MockClient(
+        (request) async => http.Response(
+          jsonEncode(publishedCatalog),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        ),
+      );
+      final repo = HttpTaskRepository('https://cdn.example.com', client: client);
+
+      final found = await repo.findByName('t1');
+      expect(found?.title, '公开任务一');
+      expect(await repo.findByName('missing'), isNull);
+    });
+
+    test('公开数据源全部不可用 → 抛错不静默', () async {
+      final client = MockClient(
+        (request) async => http.Response('server error', 500),
+      );
+      final repo = HttpTaskRepository('https://cdn.example.com', client: client);
+
+      expect(repo.findAll(), throwsA(isA<Exception>()));
     });
   });
 }

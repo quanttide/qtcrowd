@@ -2,22 +2,30 @@ import 'package:flutter/material.dart';
 
 import '../models/my_claim.dart';
 import '../models/task.dart';
+import '../repositories/claim_api.dart';
 import '../repositories/my_task_repository.dart';
 import 'task_list_screen.dart' show TaskStatusChip;
 
+/// 参与端身份标识（认领 API body partner_id，dart-define 配置）。
+String currentPartnerId() =>
+    const String.fromEnvironment('QTCLOUD_CROWD_PARTNER_ID');
+
 /// 任务详情：背景 / 内容 / 输入 / 参考 / 交付物 / 报酬 / 其他 / 如何报名。
 ///
-/// 认领：待认领任务 → 认领按钮 → 本地记一条认领（data/my-tasks.json），
-/// 状态展示为进行中。参与端不写管理端数据，任务档案状态不变。
+/// 认领：待认领任务 → 认领按钮 → 调后台 API（POST {BACKEND_API}/api/tasks/{id}/claim，
+/// published → accepted）→ 成功写本地认领记录（data/my-tasks.json）→ 展示为进行中。
+/// API 失败 / 非法状态不写本地，展示错误提示。
 class TaskDetailScreen extends StatefulWidget {
   const TaskDetailScreen({
     super.key,
     required this.task,
     required this.myTasks,
+    required this.claimApi,
   });
 
   final Task task;
   final MyTaskRepository myTasks;
+  final ClaimApi claimApi;
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -47,11 +55,16 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
   }
 
-  /// 认领：待认领任务 → 本地记录我的认领 → 展示为进行中。
+  /// 认领：调后台 API（published → accepted）→ 成功写本地记录 → 展示为进行中。
+  /// API 失败 / 非法状态：不写本地，展示错误提示（不静默）。
   Future<void> _claimTask() async {
     if (_saving) return;
     setState(() => _saving = true);
     try {
+      await widget.claimApi.claim(
+        taskId: widget.task.name,
+        partnerId: currentPartnerId(),
+      );
       final claim = MyClaim(
         taskName: widget.task.name,
         taskTitle: widget.task.title,
@@ -64,7 +77,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         _error = null;
       });
     } catch (e) {
-      setState(() => _error = '认领失败：$e');
+      setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -90,14 +103,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               padding: const EdgeInsets.only(top: 8),
               child: Text(_error!, style: const TextStyle(color: Colors.red)),
             ),
-          _Section(title: '任务背景', items: task.background),
-          _Section(title: '任务内容', items: task.content),
-          _Section(title: '任务输入', items: task.input),
+          if (task.background.isNotEmpty) _Section(title: '任务背景', items: task.background),
+          if (task.content.isNotEmpty) _Section(title: '任务内容', items: task.content),
+          if (task.input.isNotEmpty) _Section(title: '任务输入', items: task.input),
           if (task.reference.isNotEmpty) _ReferenceSection(task: task),
-          _Section(title: '交付物', items: task.deliverables),
-          _Section(title: '报酬 / 结算', items: task.reward),
+          if (task.deliverables.isNotEmpty) _Section(title: '交付物', items: task.deliverables),
+          if (task.reward.isNotEmpty) _Section(title: '报酬 / 结算', items: task.reward),
           if (task.others.isNotEmpty) _Section(title: '其他说明', items: task.others),
-          _Section(title: '如何报名', items: task.applyGuide),
+          if (task.applyGuide.isNotEmpty) _Section(title: '如何报名', items: task.applyGuide),
           const SizedBox(height: 24),
         ],
       ),

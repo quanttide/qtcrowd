@@ -292,3 +292,40 @@ ul {
   font-size: 0.9em;
   margin: 0;
 }
+
+/* 公开数据源加载态（fetch 失败不静默） */
+.catalog-note {
+  color: #666;
+}
+
+.catalog-error {
+  border: 1px solid #e2b3b3;
+  background: #fdf3f3;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.catalog-error p {
+  color: #a33;
+  margin: 0 0 0.5rem;
+}
+
+.catalog-error-detail {
+  font-size: 0.85em;
+  color: #b66 !important;
+}
+
+.catalog-error button,
+.task-page button {
+  font: inherit;
+  padding: 0.25rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.catalog-error button:hover,
+.task-page button:hover {
+  border-color: #999;
+}

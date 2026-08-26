@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../models/task.dart';
+import '../repositories/claim_api.dart';
 import '../repositories/my_task_repository.dart';
 import '../repositories/task_repository.dart';
 import 'task_detail_screen.dart';
 
-/// 状态标签（待认领 / 进行中 / 已关闭，参与端视角）。
+/// 状态标签（可认领 / 进行中 / 已关闭，参与端视角）。
 class TaskStatusChip extends StatelessWidget {
   const TaskStatusChip({super.key, required this.status});
 
@@ -14,7 +15,7 @@ class TaskStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (status) {
-      TaskStatus.pending => ('待认领', Colors.orange),
+      TaskStatus.pending => ('可认领', Colors.orange),
       TaskStatus.inProgress => ('进行中', Colors.blue),
       TaskStatus.closed => ('已关闭', Colors.grey),
     };
@@ -30,17 +31,20 @@ class TaskStatusChip extends StatelessWidget {
 
 /// 任务列表（参与端入口）：展示 title / category / business / 状态 / 报酬。
 ///
-/// 状态以任务档案为准；已被我认领的待认领任务展示为进行中
-/// （本地认领记录，不写管理端数据）。
+/// 任务来自公开数据层（published 任务）：PUBLIC_URL 配置时读公开桶/CDN，
+/// 未配置时回退打包 assets tasks.json（开发兜底）。未认领状态显示「可认领」；
+/// 已被我认领的任务展示为进行中（本地认领记录）。
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({
     super.key,
     required this.repository,
     required this.myTasks,
+    required this.claimApi,
   });
 
   final TaskRepository repository;
   final MyTaskRepository myTasks;
+  final ClaimApi claimApi;
 
   @override
   State<TaskListScreen> createState() => _TaskListScreenState();
@@ -91,6 +95,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       builder: (_) => TaskDetailScreen(
                         task: task,
                         myTasks: widget.myTasks,
+                        claimApi: widget.claimApi,
                       ),
                     ),
                   ),
