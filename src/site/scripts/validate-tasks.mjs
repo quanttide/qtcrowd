@@ -117,7 +117,7 @@ function crossCheckProfile(tasks) {
     );
     return;
   }
-  // 扫描所有业务子目录（qtcloud、qtclass 等）
+  // 扫描所有业务子目录（qtcloud、qtrecurit 等）
   const parsedByName = new Map();
   for (const entry of readdirSync(PROFILE_BASE_DIR)) {
     const subdir = path.join(PROFILE_BASE_DIR, entry);
