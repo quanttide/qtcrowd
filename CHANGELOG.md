@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+### Fixed
+
+- site 发布流水线向共享 Terraform 模块注入 provider 必填变量，避免仅部署站点资源时在初始化阶段失败
+
 ### Changed
 
 - **qtcrowd-provider 定稿架构（前台唯一服务端）**：上架 + 数据 API + 写操作转发
