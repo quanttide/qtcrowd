@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/).
 
+## [Unreleased]
+
+### Added
+
+- 新增「项目复盘系统搭建」众包任务卡片，使用公开脱敏任务档案和 `project-retrospective-system` 稳定标识
+
 ## [0.1.1-beta.6] - 2026-08-26
 
 ### Added
