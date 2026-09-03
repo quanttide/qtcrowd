@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+## [0.1.1-beta.8] - 2026-09-03
+
+### Fixed
+
+- 修复站点发布流水线在 Terraform 初始化阶段缺少共享模块必填变量的问题
+
 ## [0.1.1-beta.7] - 2026-09-03
 
 ### Added
@@ -105,7 +111,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
 - 上线 crowd.quanttide.com
 
-[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.7...HEAD
+[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.8...HEAD
+[0.1.1-beta.8]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.7...site/v0.1.1-beta.8
 [0.1.1-beta.7]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.6...site/v0.1.1-beta.7
 [0.1.1-beta.6]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.5...site/v0.1.1-beta.6
 [0.1.1-beta.5]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.4...site/v0.1.1-beta.5

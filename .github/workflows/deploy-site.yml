@@ -60,6 +60,11 @@ jobs:
         env:
           ALICLOUD_ACCESS_KEY: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
           ALICLOUD_SECRET_KEY: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+          # The shared Terraform module also declares provider inputs as required
+          # variables, even when this workflow targets only site resources.
+          TF_VAR_backend_api: https://api.quanttide.com/qtcloud-crowd
+          TF_VAR_oss_access_key_id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+          TF_VAR_oss_access_key_secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
 
       - name: Build site
         working-directory: src/site
