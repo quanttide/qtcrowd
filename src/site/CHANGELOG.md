@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+## [0.1.1-beta.7] - 2026-09-03
+
 ### Added
 
 - 新增「项目复盘系统搭建」众包任务卡片，使用公开脱敏任务档案和 `project-retrospective-system` 稳定标识
@@ -103,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
 - 上线 crowd.quanttide.com
 
-[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.6...HEAD
+[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.7...HEAD
+[0.1.1-beta.7]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.6...site/v0.1.1-beta.7
 [0.1.1-beta.6]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.5...site/v0.1.1-beta.6
 [0.1.1-beta.5]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.4...site/v0.1.1-beta.5
 [0.1.1-beta.4]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.3...site/v0.1.1-beta.4
