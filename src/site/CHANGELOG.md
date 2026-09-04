@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-04
+
+### Changed
+
+- 「项目复盘系统搭建」任务取消现金激励，统一为「1000 元代金券；也可自报价，最终协商」
+
 ## [0.1.1] - 2026-09-04
 
 ### Changed
@@ -119,7 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
 - 上线 crowd.quanttide.com
 
-[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1...HEAD
+[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.2...HEAD
+[0.1.2]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1...site/v0.1.2
 [0.1.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.8...site/v0.1.1
 [0.1.1-beta.8]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.7...site/v0.1.1-beta.8
 [0.1.1-beta.7]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.6...site/v0.1.1-beta.7
