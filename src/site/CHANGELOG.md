@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-10-15
+
+### Added
+
+- 新增「评论区侵权有效取证流水线解决方案设计」任务（legal-evidence），档案重排为标准格式后上线
+
+### Changed
+
+- 移除过时的「量潮招聘工作流升级」任务
+- 「项目复盘系统搭建」状态改为「进行中」，报酬统一为代金券
+
 ## [0.1.2] - 2026-09-04
 
 ### Changed
@@ -125,7 +136,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
 - 上线 crowd.quanttide.com
 
-[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.2...HEAD
+[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.3...HEAD
+[0.1.3]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.2...site/v0.1.3
 [0.1.2]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1...site/v0.1.2
 [0.1.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.8...site/v0.1.1
 [0.1.1-beta.8]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.7...site/v0.1.1-beta.8
