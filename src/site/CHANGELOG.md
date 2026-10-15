@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-10-15
+
+### Added
+
+- 新增「批判式公关工作流搭建」任务（矛）：主动批评看不惯的现象与制度，对事不对人
+- 新增「战略管理工作流搭建」任务（战略层）：统一矛与盾，把争议作为「制度创新实验室」的主动经营对象
+
 ## [0.1.3] - 2026-10-15
 
 ### Added
@@ -136,7 +143,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/
 - 上线配置：`deploy-site.yml` + `manifests/terraform`（qtcrowd-site / CDN crowd.quanttide.com / DNS CNAME / 证书 / SPA 回退）
 - 上线 crowd.quanttide.com
 
-[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.3...HEAD
+[Unreleased]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.4...HEAD
+[0.1.4]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.3...site/v0.1.4
 [0.1.3]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.2...site/v0.1.3
 [0.1.2]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1...site/v0.1.2
 [0.1.1]: https://github.com/quanttide/qtcrowd/compare/site/v0.1.1-beta.8...site/v0.1.1
