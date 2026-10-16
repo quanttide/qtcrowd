@@ -2,7 +2,7 @@
 //
 // 用法：
 //   node scripts/sync-tasks.mjs
-//   QTCROWD_PROFILE_DIR=/path/to/data/profile/qtcloud node scripts/sync-tasks.mjs
+//   QTCROWD_PROFILE_DIR=/path/to/data/profile node scripts/sync-tasks.mjs
 //
 // 规则：
 // - 档案字段（title/business/category/status/background/content/input/reference/
@@ -11,7 +11,7 @@
 //     description —— 目录一句话；新任务无值时由档案内容推导占位，需人工润色；
 //     applyGuide —— 如何报名步骤；新任务无值时留空数组，校验脚本会强制补充。
 // 生成后请运行 npm run data:validate 确认通过。
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseProfileDir } from "./lib/profile.mjs";
@@ -19,15 +19,27 @@ import { parseProfileDir } from "./lib/profile.mjs";
 const SCRIPTS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SITE_DIR = path.resolve(SCRIPTS_DIR, "..");
 const TASKS_JSON = path.join(SITE_DIR, "src", "data", "tasks.json");
-// 默认在父仓库 quanttide-crowd 布局下定位 data/profile（qtcrowd 为父仓库子模块）
-const PROFILE_DIR =
+// 默认在父仓库 quanttide-crowd 布局下定位 data/profile（qtcrowd 为父仓库子模块），
+// 扫描全部业务子目录（quanttide-* 等，与 validate-tasks.mjs 口径一致）
+const PROFILE_BASE_DIR =
   process.env.QTCROWD_PROFILE_DIR ??
-  path.resolve(SITE_DIR, "..", "..", "..", "..", "data", "profile", "qtcloud");
+  path.resolve(SITE_DIR, "..", "..", "..", "..", "data", "profile");
 
-if (!existsSync(PROFILE_DIR)) {
-  console.error(`[sync] 未找到 data/profile 目录：${PROFILE_DIR}`);
+if (!existsSync(PROFILE_BASE_DIR)) {
+  console.error(`[sync] 未找到 data/profile 目录：${PROFILE_BASE_DIR}`);
   console.error("[sync] 请在父仓库 quanttide-crowd 下运行（data/profile 为父仓库子模块），或用 QTCROWD_PROFILE_DIR 指定目录。");
   process.exit(1);
+}
+
+/** 目录含业务子目录则扫描子目录；否则视为单一档案目录直接解析 */
+function collectProfileDirs(baseDir) {
+  const subDirs = readdirSync(baseDir)
+    .filter(entry => !entry.startsWith("."))
+    .map(entry => path.join(baseDir, entry))
+    .filter(entry => statSync(entry).isDirectory())
+    .sort();
+  if (subDirs.length === 0) return [baseDir];
+  return subDirs;
 }
 
 /** 新任务 description 占位：由档案内容推导，需人工润色 */
@@ -43,25 +55,27 @@ if (existsSync(TASKS_JSON)) {
   for (const task of data.tasks ?? []) existing.set(task.name, task);
 }
 
-const tasks = parseProfileDir(PROFILE_DIR).map(parsed => {
-  const prev = existing.get(parsed.name);
-  return {
-    name: parsed.name,
-    title: parsed.title,
-    description: prev?.description ?? fallbackDescription(parsed),
-    business: parsed.business,
-    category: parsed.category,
-    status: parsed.status,
-    background: parsed.background,
-    content: parsed.content,
-    input: parsed.input,
-    reference: parsed.reference,
-    deliverables: parsed.deliverables,
-    reward: parsed.reward,
-    others: parsed.others,
-    applyGuide: prev?.applyGuide ?? [],
-  };
-});
+const tasks = collectProfileDirs(PROFILE_BASE_DIR)
+  .flatMap(dir => parseProfileDir(dir))
+  .map(parsed => {
+    const prev = existing.get(parsed.name);
+    return {
+      name: parsed.name,
+      title: parsed.title,
+      description: prev?.description ?? fallbackDescription(parsed),
+      business: parsed.business,
+      category: parsed.category,
+      status: parsed.status,
+      background: parsed.background,
+      content: parsed.content,
+      input: parsed.input,
+      reference: parsed.reference,
+      deliverables: parsed.deliverables,
+      reward: parsed.reward,
+      others: parsed.others,
+      applyGuide: prev?.applyGuide ?? [],
+    };
+  });
 
 writeFileSync(TASKS_JSON, `${JSON.stringify({ tasks }, null, 2)}\n`);
-console.log(`[sync] 已生成 ${TASKS_JSON}（${tasks.length} 个任务，数据源：${PROFILE_DIR}）`);
+console.log(`[sync] 已生成 ${TASKS_JSON}（${tasks.length} 个任务，数据源：${PROFILE_BASE_DIR}）`);
